@@ -370,8 +370,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.021354135, y: -0.44537038}
   m_AnchorMax: {x: 1.0213542, y: 0.5546296}
-  m_AnchoredPosition: {x: 0, y: -2}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -8, y: -1}
+  m_SizeDelta: {x: 959.373, y: -922.3827}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &563083782
 CanvasRenderer:
@@ -395,10 +395,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useRelativeLocations: 1
   locations:
-  - name: Location 1
+  - name: EndLocation
     transformFallback:
-      LocalPosition: {x: 0, y: -8, z: 0}
-      AnchoredPosition: {x: 0, y: -8}
+      LocalPosition: {x: 0, y: 11, z: 0}
+      AnchoredPosition: {x: 0, y: 11}
       SizeDelta: {x: 0, y: 0}
       AnchorMin: {x: 0, y: 0}
       AnchorMax: {x: 0, y: 0}
@@ -410,10 +410,10 @@ MonoBehaviour:
       screenConfigName: 
     transformConfigs:
       items: []
-  - name: Location 2
+  - name: StartLocation
     transformFallback:
-      LocalPosition: {x: 0, y: -37, z: 0}
-      AnchoredPosition: {x: 0, y: -37}
+      LocalPosition: {x: 0, y: 0, z: 0}
+      AnchoredPosition: {x: 0, y: 0}
       SizeDelta: {x: 0, y: 0}
       AnchorMin: {x: 0, y: 0}
       AnchorMax: {x: 0, y: 0}
@@ -427,8 +427,8 @@ MonoBehaviour:
       items: []
   animations:
   - name: Go up
-    from: Location 2
-    to: Location 1
+    from: StartLocation
+    to: EndLocation
     curve:
       serializedVersion: 2
       m_Curve:
@@ -451,59 +451,33 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
-      m_PostInfinity: 2
+      m_PostInfinity: 0
       m_RotationOrder: 4
     actionBeforeStart:
       m_PersistentCalls:
         m_Calls: []
     actionAfterFinish:
       m_PersistentCalls:
-        m_Calls: []
-    actionOnUpdating:
-      m_PersistentCalls:
-        m_Calls: []
-    animateWithEulerRotation: 0
-    timeScale: 1
-  - name: Go down
-    from: Location 1
-    to: Location 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    actionBeforeStart:
-      m_PersistentCalls:
-        m_Calls: []
-    actionAfterFinish:
-      m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 11500000, guid: fbf511209ead75448bda470f26a3ea37, type: 3}
+          m_TargetAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_MethodName: set_name
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: Go down
+            m_BoolArgument: 0
+          m_CallState: 2
     actionOnUpdating:
       m_PersistentCalls:
         m_Calls: []
     animateWithEulerRotation: 0
     timeScale: 1
   startLocation: Location 2
-  startUpAnimation: 
+  startUpAnimation: Go up
   actionOnInit:
     m_PersistentCalls:
       m_Calls: []
@@ -554,12 +528,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 78
-  m_fontSizeBase: 20.25
+  m_fontSize: 76
+  m_fontSizeBase: 76
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 32
-  m_fontSizeMax: 78
+  m_fontSizeMin: 65
+  m_fontSizeMax: 76
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -691,7 +665,7 @@ MonoBehaviour:
   customFontSizers:
     items:
     - screenConfigName: Landscape
-      OptimizedSize: 78
+      OptimizedSize: 76
       MinSize: 10
       MaxSize: 500
       UseMinSize: 0
@@ -716,7 +690,7 @@ MonoBehaviour:
   customMinFontSizers:
     items:
     - screenConfigName: Landscape
-      OptimizedSize: 32
+      OptimizedSize: 65
       MinSize: 10
       MaxSize: 500
       UseMinSize: 0
