@@ -501,7 +501,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Devam etmek icin t\u0131klay\u0131n"
+  m_text: Devam etmek icin tiklayin
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: db70d3e4b7c00d140860fe3443c8ec91, type: 2}
   m_sharedMaterial: {fileID: 4999020330702091771, guid: db70d3e4b7c00d140860fe3443c8ec91, type: 2}
