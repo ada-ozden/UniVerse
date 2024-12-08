@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;  // UI sınıflarını kullanmak için gerekli
-using TMPro;          // TextMeshPro sınıflarını kullanmak için gerekli
+using UnityEngine.UI;
+using TMPro;  // For TextMeshPro elements
 using UnityEngine.Networking;
 using System.Collections;
 using System.Text;
@@ -17,7 +17,10 @@ public class SignUpForm : MonoBehaviour
     [SerializeField] private TMP_Dropdown bolumDropdown;
     [SerializeField] private Button kaydolBtn;
 
-    private string baseUrl = "http://localhost:3333/user/register"; // Backend URL'iniz
+    // Single UI element for general error message
+    [SerializeField] private TextMeshProUGUI generalErrorText;
+
+    private string baseUrl = "http://localhost:3333/user/register";
     private bool isSubmitting = false;
 
     void Start()
@@ -35,19 +38,70 @@ public class SignUpForm : MonoBehaviour
 
     public void OnSignUpButtonClicked()
     {
-        if (isSubmitting) return; // Halen bir istek gönderiliyorsa işlemi durdur
-        isSubmitting = true;      // Yeni bir istek gönderiliyor
+        if (isSubmitting) return;
 
-        Debug.Log("Button pressed");
-        string ad = adInputField.text;
-        string soyad = soyadInputField.text;
-        string kullaniciAdi = kullaniciAdiInputField.text;
-        string email = emailInputField.text;
-        string sifre = sifreInputField.text;
-        string cinsiyet = kadinToggle.isOn ? "Kadın" : "Erkek";
+        // Clear previous errors
+        generalErrorText.text = "";
+        generalErrorText.gameObject.SetActive(false);
+
+        string ad = adInputField.text.Trim();
+        string soyad = soyadInputField.text.Trim();
+        string kullaniciAdi = kullaniciAdiInputField.text.Trim();
+        string email = emailInputField.text.Trim();
+        string sifre = sifreInputField.text.Trim();
+        string cinsiyet = kadinToggle.isOn ? "Kadın" : erkekToggle.isOn ? "Erkek" : "";
         string bolum = bolumDropdown.options[bolumDropdown.value].text;
 
-        Debug.Log($"Kullanıcı Kaydı: {ad}, {soyad}, {kullaniciAdi}, {email}, {sifre}, {cinsiyet}, {bolum}");
+        // Validate inputs
+        StringBuilder errorBuilder = new StringBuilder();
+        bool isValid = true;
+
+        if (string.IsNullOrWhiteSpace(ad))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Ad alani bos olamaz.");
+        }
+        if (string.IsNullOrWhiteSpace(soyad))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Soyad alani bos olamaz.");
+        }
+        if (!IsValidUsername(kullaniciAdi))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Kullanici adi 3-15 karakter uzunlugunda olmali.");
+        }
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("E-posta alani bos olamaz.");
+        }
+        else if (!IsValidEmail(email))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Gecerli bir e-posta adresi girin.");
+        }
+        if (!IsValidPassword(sifre))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Sifre 8-16 karakter arasinda olmali ve en az bir buyuk harf, bir kucuk harf, bir sayi ve bir ozel karakter icermelidir.");
+        }
+        if (string.IsNullOrWhiteSpace(cinsiyet))
+        {
+            isValid = false;
+            errorBuilder.AppendLine("Cinsiyet secimi zorunludur.");
+        }
+
+        if (!isValid)
+        {
+            generalErrorText.text = errorBuilder.ToString();
+            generalErrorText.gameObject.SetActive(true);
+            isSubmitting = false;
+            return;
+        }
+
+        // If valid, proceed with the request
+        isSubmitting = true;
 
         var userData = new UserData()
         {
@@ -60,7 +114,6 @@ public class SignUpForm : MonoBehaviour
             bolum = bolum
         };
 
-        // JSON data gönderimi
         string jsonData = JsonUtility.ToJson(userData);
         Debug.Log($"Gönderilen JSON Verisi: {jsonData}");
         StartCoroutine(RegisterUser(jsonData));
@@ -76,7 +129,7 @@ public class SignUpForm : MonoBehaviour
 
         yield return request.SendWebRequest();
 
-        isSubmitting = false; // İstek tamamlandı
+        isSubmitting = false;
 
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
@@ -86,6 +139,25 @@ public class SignUpForm : MonoBehaviour
         {
             Debug.Log($"Kullanıcı başarıyla kaydedildi: {request.downloadHandler.text}");
         }
+    }
+
+    private bool IsValidUsername(string username)
+    {
+        return username.Length >= 3 && username.Length <= 15;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+    }
+
+    private bool IsValidPassword(string password)
+    {
+        return password.Length >= 8 && password.Length <= 16 &&
+               System.Text.RegularExpressions.Regex.IsMatch(password, @"[A-Z]") &&
+               System.Text.RegularExpressions.Regex.IsMatch(password, @"[a-z]") &&
+               System.Text.RegularExpressions.Regex.IsMatch(password, @"\d") &&
+               System.Text.RegularExpressions.Regex.IsMatch(password, @"[@$!%*?&]");
     }
 }
 
