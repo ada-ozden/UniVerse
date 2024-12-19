@@ -1,9 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;  // For TextMeshPro elements
-using UnityEngine.Networking;
-using System.Collections;
-using System.Text;
+using TMPro;
+using Firebase;
+using Firebase.Auth;
+using Firebase.Firestore;
+using System.Threading.Tasks;
 
 public class SignUpForm : MonoBehaviour
 {
@@ -16,15 +20,27 @@ public class SignUpForm : MonoBehaviour
     [SerializeField] private Toggle erkekToggle;
     [SerializeField] private TMP_Dropdown bolumDropdown;
     [SerializeField] private Button kaydolBtn;
-
-    // Single UI element for general error message
     [SerializeField] private TextMeshProUGUI generalErrorText;
 
-    private string baseUrl = "http://localhost:3333/user/register";
+    private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
     private bool isSubmitting = false;
 
     void Start()
     {
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                InitializeFirebase();
+            }
+            else
+            {
+                Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
+            }
+        });
+
         if (kaydolBtn == null)
         {
             Debug.LogError("Button not assigned!");
@@ -36,23 +52,27 @@ public class SignUpForm : MonoBehaviour
         }
     }
 
+    void InitializeFirebase()
+    {
+        auth = FirebaseAuth.DefaultInstance;
+        firestore = FirebaseFirestore.DefaultInstance;
+    }
+
     public void OnSignUpButtonClicked()
     {
         if (isSubmitting) return;
 
-        // Clear previous errors
         generalErrorText.text = "";
         generalErrorText.gameObject.SetActive(false);
 
-        string ad = adInputField.text.Trim();
-        string soyad = soyadInputField.text.Trim();
-        string kullaniciAdi = kullaniciAdiInputField.text.Trim();
-        string email = emailInputField.text.Trim();
-        string sifre = sifreInputField.text.Trim();
+        string ad = adInputField.text;
+        string soyad = soyadInputField.text;
+        string kullaniciAdi = kullaniciAdiInputField.text;
+        string email = emailInputField.text;
+        string sifre = sifreInputField.text;
         string cinsiyet = kadinToggle.isOn ? "Kadın" : erkekToggle.isOn ? "Erkek" : "";
         string bolum = bolumDropdown.options[bolumDropdown.value].text;
 
-        // Validate inputs
         StringBuilder errorBuilder = new StringBuilder();
         bool isValid = true;
 
@@ -96,11 +116,9 @@ public class SignUpForm : MonoBehaviour
         {
             generalErrorText.text = errorBuilder.ToString();
             generalErrorText.gameObject.SetActive(true);
-            isSubmitting = false;
             return;
         }
 
-        // If valid, proceed with the request
         isSubmitting = true;
 
         var userData = new UserData()
@@ -109,35 +127,57 @@ public class SignUpForm : MonoBehaviour
             soyad = soyad,
             kullaniciAdi = kullaniciAdi,
             email = email,
-            sifre = sifre,
             cinsiyet = cinsiyet,
             bolum = bolum
         };
 
-        string jsonData = JsonUtility.ToJson(userData);
-        Debug.Log($"Gönderilen JSON Verisi: {jsonData}");
-        StartCoroutine(RegisterUser(jsonData));
+        // Firebase'e kaydet
+        RegisterUserInFirebase(userData, sifre);
     }
 
-    private IEnumerator RegisterUser(string jsonData)
+    private async void RegisterUserInFirebase(UserData userData, string sifre)
     {
-        var request = new UnityWebRequest(baseUrl, "POST");
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        yield return request.SendWebRequest();
-
-        isSubmitting = false;
-
-        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        try
         {
-            Debug.LogError($"Hata: {request.error}");
+            var authResult = await auth.CreateUserWithEmailAndPasswordAsync(userData.email, sifre);
+            FirebaseUser newUser = authResult.User;
+            Debug.LogFormat("Firebase kullanıcı kaydı başarılı: {0} ({1})", newUser.DisplayName, newUser.UserId);
+
+            UserProfile userProfile = new UserProfile { DisplayName = userData.kullaniciAdi };
+            await newUser.UpdateUserProfileAsync(userProfile);
+            Debug.Log("Profil başarıyla güncellendi.");
+
+            // E-posta doğrulama gönder
+            await newUser.SendEmailVerificationAsync();
+            Debug.Log("E-posta doğrulaması gönderildi: " + userData.email);
+
+            // Kullanıcı bilgilerini Firestore'a kaydet (şifre hariç)
+            DocumentReference docRef = firestore.Collection("users").Document(newUser.UserId);
+            var userDictionary = new Dictionary<string, object>
+            {
+                { "userId", newUser.UserId }, // Unique userId
+                { "ad", userData.ad },
+                { "soyad", userData.soyad },
+                { "kullaniciAdi", userData.kullaniciAdi },
+                { "email", userData.email },
+                { "cinsiyet", userData.cinsiyet },
+                { "bolum", userData.bolum }
+            };
+            await docRef.SetAsync(userDictionary);
+            Debug.Log("Kullanıcı bilgileri Firestore'a kaydedildi.");
+
+            // Kullanıcı adını AppManager'a ata
+            AppManager.Instance.userName = userData.kullaniciAdi;
         }
-        else
+        catch (FirebaseException e)
         {
-            Debug.Log($"Kullanıcı başarıyla kaydedildi: {request.downloadHandler.text}");
+            Debug.LogError("Firebase kullanıcı kaydı sırasında hata oluştu: " + e.Message);
+            generalErrorText.text = "Firebase kayıt hatası: " + e.Message;
+            generalErrorText.gameObject.SetActive(true);
+        }
+        finally
+        {
+            isSubmitting = false;
         }
     }
 
@@ -161,14 +201,27 @@ public class SignUpForm : MonoBehaviour
     }
 }
 
-[System.Serializable]
+[FirestoreData]
 public class UserData
 {
-    public string ad;
-    public string soyad;
-    public string kullaniciAdi;
-    public string email;
-    public string sifre;
-    public string cinsiyet;
-    public string bolum;
+    [FirestoreProperty]
+    public string userId { get; set; } // benzersiz User id
+
+    [FirestoreProperty]
+    public string ad { get; set; }
+
+    [FirestoreProperty]
+    public string soyad { get; set; }
+
+    [FirestoreProperty]
+    public string kullaniciAdi { get; set; }
+
+    [FirestoreProperty]
+    public string email { get; set; }
+
+    [FirestoreProperty]
+    public string cinsiyet { get; set; }
+
+    [FirestoreProperty]
+    public string bolum { get; set; }
 }

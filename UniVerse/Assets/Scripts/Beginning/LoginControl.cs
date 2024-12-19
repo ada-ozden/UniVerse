@@ -1,20 +1,33 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Networking;
-using System.Collections;
-using System.Text;
+using Firebase;
+using Firebase.Auth;
+using System.Threading.Tasks;
 
-public class LoginForm : MonoBehaviour
+public class LoginControl : MonoBehaviour
 {
     [SerializeField] private TMP_InputField emailInputField;
     [SerializeField] private TMP_InputField sifreInputField;
     [SerializeField] private Button loginBtn;
 
-    private string loginUrl = "http://localhost:3333/user/login"; // Backend URL'iniz
+    private FirebaseAuth auth;
 
     void Start()
     {
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
+        {
+            var dependencyStatus = task.Result;
+            if (dependencyStatus == Firebase.DependencyStatus.Available)
+            {
+                InitializeFirebase();
+            }
+            else
+            {
+                Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
+            }
+        });
+
         if (loginBtn == null)
         {
             Debug.LogError("Button not assigned!");
@@ -26,64 +39,66 @@ public class LoginForm : MonoBehaviour
         }
     }
 
+    void InitializeFirebase()
+    {
+        auth = FirebaseAuth.DefaultInstance;
+    }
+
     public void OnLoginButtonClicked()
     {
         Debug.Log("Giriş Yap button pressed");
+
+        if (emailInputField == null || sifreInputField == null)
+        {
+            Debug.LogError("Email or Password Input Field is not assigned!");
+            return;
+        }
+
         string email = emailInputField.text;
         string sifre = sifreInputField.text;
 
         if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(sifre))
         {
-            Debug.LogWarning("Email or Sifre should not be empty.");
+            Debug.LogWarning("Email veya Şifre boş olamaz.");
             return;
         }
 
-        var loginData = new LoginData()
-        {
-            email = email,
-            sifre = sifre
-        };
-
-        string jsonData = JsonUtility.ToJson(loginData);
-        Debug.Log($"Gönderilen JSON Verisi: {jsonData}");
-        StartCoroutine(LoginUser(jsonData));
+        // Firebase ile oturum açma işlemini başlatın
+        LoginUserFirebase(email, sifre);
     }
 
-    private IEnumerator LoginUser(string jsonData)
+    private async void LoginUserFirebase(string email, string password)
     {
-        var request = new UnityWebRequest(loginUrl, "POST");
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        if (auth == null)
         {
-            Debug.LogError($"Hata: {request.error}");
+            Debug.LogError("Firebase auth is not initialized!");
+            return;
         }
-        else
-        {
-            Debug.Log($"Response Code: {request.responseCode}");
-            Debug.Log($"Backend Yanıtı: {request.downloadHandler.text}");
 
-            // Yanıt koduna göre sonucu belirleyelim
-            if (request.responseCode == 200 || request.responseCode == 201)
+        try
+        {
+            var authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
+            FirebaseUser newUser = authResult.User;
+            Debug.LogFormat("Firebase kullanıcı giriş başarılı: {0} ({1})", newUser.DisplayName, newUser.UserId);
+
+            // E-posta doğrulamasını kontrol et
+            if (newUser.IsEmailVerified)
             {
-                Debug.Log("Giriş başarılı: " + request.downloadHandler.text);
+                // Kullanıcı adını AppManager'a ata
+                AppManager.Instance.userName = newUser.DisplayName;
+                UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
             }
             else
             {
-                Debug.LogError("Giriş başarısız: " + request.downloadHandler.text);
+                Debug.LogWarning("Kullanıcının e-posta adresi doğrulanmamış.");
+                Debug.LogWarning("Lütfen e-posta adresinizi doğrulayın.");
+                await newUser.SendEmailVerificationAsync();
+                Debug.Log("E-posta doğrulaması tekrar gönderildi: " + email);
             }
         }
+        catch (FirebaseException e)
+        {
+            Debug.LogError("Firebase giriş hatası: " + e.Message);
+        }
     }
-}
-
-[System.Serializable]
-public class LoginData
-{
-    public string email;
-    public string sifre;
 }
