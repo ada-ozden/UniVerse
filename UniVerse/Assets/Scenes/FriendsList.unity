@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 604
     m_Right: 0
-    m_Top: 0
+    m_Top: 427
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 70
@@ -404,7 +404,7 @@ MonoBehaviour:
     OptimizedSize:
       left: 340
       right: 0
-      top: 0
+      top: 240
       bottom: 0
     MinSize:
       left: 0
