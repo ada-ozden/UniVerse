@@ -1012,7 +1012,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1408449433}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
+        m_MethodName: StartSceneChange
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1783,7 +1783,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1408449433}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
+        m_MethodName: StartSceneChange
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2087,7 +2087,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1408449433}
         m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
-        m_MethodName: ChangeScene
+        m_MethodName: StartSceneChange
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2188,7 +2188,7 @@ GameObject:
   - component: {fileID: 1408449432}
   - component: {fileID: 1408449433}
   m_Layer: 0
-  m_Name: ScreenChanger
+  m_Name: SceneChanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2221,6 +2221,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d4093ae60793ce46b594f9bb5c8d6b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animationPanel: {fileID: 1682149218}
+  animationTime: 0.5
+  targetSceneName: 
 --- !u!1 &1438331253
 GameObject:
   m_ObjectHideFlags: 0
@@ -2390,7 +2393,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -813, y: 299}
+  m_AnchoredPosition: {x: -813, y: 293}
   m_SizeDelta: {x: -1807.484, y: -971.7267}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1682149219
@@ -2411,6 +2414,36 @@ MonoBehaviour:
     transformFallback:
       LocalPosition: {x: -813, y: 299, z: 0}
       AnchoredPosition: {x: -813, y: 299}
+      SizeDelta: {x: -1807.484, y: -971.7267}
+      AnchorMin: {x: 0, y: 0}
+      AnchorMax: {x: 1, y: 1}
+      Pivot: {x: 0.5, y: 0.5}
+      Scale: {x: 1, y: 1, z: 1}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      EulerAngles: {x: -0, y: 0, z: 0}
+      saveRotationAsEuler: 1
+      screenConfigName: 
+    transformConfigs:
+      items: []
+  - name: Location 2
+    transformFallback:
+      LocalPosition: {x: -813, y: 156, z: 0}
+      AnchoredPosition: {x: -813, y: 156}
+      SizeDelta: {x: -1807.484, y: -971.7267}
+      AnchorMin: {x: 0, y: 0}
+      AnchorMax: {x: 1, y: 1}
+      Pivot: {x: 0.5, y: 0.5}
+      Scale: {x: 1, y: 1, z: 1}
+      rotation: {x: -0, y: -0, z: -0, w: 1}
+      EulerAngles: {x: -0, y: 0, z: 0}
+      saveRotationAsEuler: 1
+      screenConfigName: 
+    transformConfigs:
+      items: []
+  - name: Location 3
+    transformFallback:
+      LocalPosition: {x: -813, y: 20, z: 0}
+      AnchoredPosition: {x: -813, y: 20}
       SizeDelta: {x: -1807.484, y: -971.7267}
       AnchorMin: {x: 0, y: 0}
       AnchorMax: {x: 1, y: 1}
