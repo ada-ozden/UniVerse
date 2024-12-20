@@ -4,12 +4,14 @@ using TMPro;
 using Firebase;
 using Firebase.Auth;
 using System.Threading.Tasks;
+using UnityEngine.SceneManagement;
 
 public class LoginControl : MonoBehaviour
 {
     [SerializeField] private TMP_InputField emailInputField;
     [SerializeField] private TMP_InputField sifreInputField;
     [SerializeField] private Button loginBtn;
+    [SerializeField] private string nextSceneName="GameScene";
 
     private FirebaseAuth auth;
 
@@ -84,9 +86,9 @@ public class LoginControl : MonoBehaviour
             // E-posta doğrulamasını kontrol et
             if (newUser.IsEmailVerified)
             {
-                // Kullanıcı adını AppManager'a ata
-                AppManager.Instance.userName = newUser.DisplayName;
-                UnityEngine.SceneManagement.SceneManager.LoadScene("GameScene");
+              
+                
+                SceneManager.LoadScene(nextSceneName);
             }
             else
             {
