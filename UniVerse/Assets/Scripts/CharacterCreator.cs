@@ -12,6 +12,8 @@ public class CharacterCreator : MonoBehaviour
     [SerializeField] private Slider weightSlider;
     [SerializeField] private Slider waistSlider;
     [SerializeField] private Button[] skinColorButtons;
+    [SerializeField] private Button[] eyeColorButtons;
+    [SerializeField] private Button[] hairColorButtons;
     private Dictionary<string, DnaSetter> dna;
 
     void OnEnable()
@@ -25,6 +27,16 @@ public class CharacterCreator : MonoBehaviour
             int index = i; // Local copy for the closure
             skinColorButtons[index].onClick.AddListener(() => ChangeSkinColor(index));
         }
+        for (int i = 0; i < eyeColorButtons.Length; i++)
+        {
+            int index = i; // Local copy for the closure
+            eyeColorButtons[index].onClick.AddListener(() => ChangeEyeColor(index));
+        }
+        for (int i = 0; i < hairColorButtons.Length; i++)
+        {
+            int index = i; // Local copy for the closure
+            hairColorButtons[index].onClick.AddListener(() => ChangeHairColor(index));
+        }
     }
 
     void OnDisable()
@@ -34,6 +46,14 @@ public class CharacterCreator : MonoBehaviour
         weightSlider.onValueChanged.RemoveListener(WeightChange);
         waistSlider.onValueChanged.RemoveListener(WaistChange);
         foreach (var button in skinColorButtons)
+        {
+            button.onClick.RemoveAllListeners();
+        }
+        foreach (var button in eyeColorButtons)
+        {
+            button.onClick.RemoveAllListeners();
+        }
+        foreach (var button in hairColorButtons)
         {
             button.onClick.RemoveAllListeners();
         }
@@ -83,6 +103,58 @@ public class CharacterCreator : MonoBehaviour
 
         if (index < 0 || index >= skinColors.Length) return;
         avatar.SetColor("Skin", skinColors[index]);
+        avatar.UpdateColors(true);
+    }
+public void ChangeEyeColor(int index)
+    {
+        // Define your predefined eye colors
+        Color[] eyeColors = new Color[]
+{
+    new Color(0.68f, 0.84f, 0.90f),  // #ADD8E6 (Light Blue)
+    new Color(0f, 0f, 1f),           // #0000FF (Blue)
+    new Color(0.74f, 0.74f, 0.74f),  // #BEBEBE (Gray)
+    new Color(0f, 1f, 0f),           // #00FF00 (Green)
+    new Color(0.56f, 0.46f, 0.09f),  // #8E7618 (Hazel)
+    new Color(0.77f, 0.64f, 0.52f),  // #C4A484 (Light Brown)
+    new Color(0.44f, 0.31f, 0.22f),  // #6F4E37 (Brown)
+    new Color(1f, 0.75f, 0f),        // #FFBF00 (Amber)
+    new Color(0.54f, 0.17f, 0.89f),  // #8A2BE2 (Violet)
+    new Color(0f, 0f, 0f)            // #000000 (Black)
+};
+
+        if (index < 0 || index >= eyeColors.Length) return;
+        avatar.SetColor("Eyes", eyeColors[index]);
+        avatar.UpdateColors(true);
+    }
+    public void ChangeHairColor(int index)
+    {
+        // Define your predefined eye colors
+        Color[] hairColors = new Color[]
+{
+    new Color(1.0f, 1.0f, 1.0f),         // #FFFFFF (White)
+    new Color(0.74f, 0.74f, 0.74f),      // #BEBEBE (Gray)
+    new Color(0.5f, 0.5f, 0.5f),         // #808080 (Silver)
+    new Color(0.87f, 0.72f, 0.53f),      // #DEC6AA (Dirty Blonde)
+    new Color(0.77f, 0.64f, 0.52f),      // #C4A484 (Light Brown)
+    new Color(0.93f, 0.53f, 0.18f),      // #ED8E32 (Copper)
+    new Color(0.82f, 0.41f, 0.12f),      // #D2691E (Chestnut)
+    new Color(0.55f, 0.27f, 0.07f),       // #8B4513 (Dark Brown)
+    new Color(0.44f, 0.31f, 0.22f),      // #6F4E37 (Brown)
+    new Color(0.0f, 0.0f, 0.0f),         // #000000 (Black)
+    new Color(1.0f, 0.75f, 0.8f),        // #FFBFD0 (Pastel Pink)
+    new Color(0.8f, 0.47f, 0.65f),       // #CD79A4 (Mauve)
+    new Color(1.0f, 0.84f, 0.0f),        // #FFD700 (Blonde)
+    new Color(1.0f, 0.0f, 0.0f),         // #FF0000 (Red)
+    new Color(0.7f, 0.13f, 0.13f),       // #B22222 (Auburn)  
+    new Color(0.0f, 1.0f, 0.0f),         // #00FF00 (Green)
+    new Color(0.68f, 0.84f, 0.90f),      // #ADD8E6 (Light Blue)
+    new Color(0.0f, 0.0f, 1.0f),         // #0000FF (Blue)
+    new Color(0.54f, 0.17f, 0.89f),      // #8A2BE2 (Violet)
+    new Color(0.29f, 0.0f, 0.51f)       // #4B0082 (Indigo)    
+};
+
+        if (index < 0 || index >= hairColors.Length) return;
+        avatar.SetColor("Hair", hairColors[index]);
         avatar.UpdateColors(true);
     }
 }
