@@ -716,6 +716,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233997476}
   m_CullTransparentMesh: 1
+--- !u!114 &413073193 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6893541704864824193, guid: 61fc329f38cf06a4095be809d652ff5b, type: 3}
+  m_PrefabInstance: {fileID: 3179300812312088056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &619024454
 GameObject:
   m_ObjectHideFlags: 0
@@ -2787,7 +2798,7 @@ GameObject:
   - component: {fileID: 1829787165}
   - component: {fileID: 1829787166}
   m_Layer: 0
-  m_Name: FriendListManager
+  m_Name: SearchListManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2817,11 +2828,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1829787164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19e6164b0c9c1db49807a354d1ef4898, type: 3}
+  m_Script: {fileID: 11500000, guid: 22e793b2be9d6ae4d87c19a95741abf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   listElementPrefab: {fileID: 7436829925107229347, guid: d9862d032037cb04581509f5eeeb71e1, type: 3}
   content: {fileID: 220306847}
+  searchInput: {fileID: 413073193}
 --- !u!1 &2088852518
 GameObject:
   m_ObjectHideFlags: 0
