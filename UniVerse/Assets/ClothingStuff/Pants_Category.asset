@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ccda852dc68bb449b6a02d1966b0dc, type: 3}
+  m_Name: Pants_Category
+  m_EditorClassIdentifier: 
+  CategoryName: Pants
+  Items:
+  - Name: FemalePantsJeans
+    Thumbnail: {fileID: 21300000, guid: fe2ba0ea5a60775499f09a36987011e5, type: 3}
+    SlotName: Legs
+    OverlayName: FemaleSportPants1
+  - Name: FemalePantsSquares
+    Thumbnail: {fileID: 21300000, guid: bcdcd7ad30d44f546875e9a6625303b1, type: 3}
+    SlotName: Legs
+    OverlayName: FemalePants2
+  - Name: FemaleSportPants
+    Thumbnail: {fileID: 21300000, guid: 49a798bb31c17954fa16374ba236b8a7, type: 3}
+    SlotName: Legs
+    OverlayName: FemaleSportPants

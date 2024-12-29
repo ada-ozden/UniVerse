@@ -11,6 +11,7 @@ public class CharacterCreator : MonoBehaviour
     [SerializeField] private Slider heightSlider;
     [SerializeField] private Slider weightSlider;
     [SerializeField] private Slider waistSlider;
+    [SerializeField] private Slider muscleSlider;
     [SerializeField] private Button[] skinColorButtons;
     [SerializeField] private Button[] eyeColorButtons;
     [SerializeField] private Button[] hairColorButtons;
@@ -22,6 +23,7 @@ public class CharacterCreator : MonoBehaviour
         heightSlider.onValueChanged.AddListener(HeightChange);
         weightSlider.onValueChanged.AddListener(WeightChange);
         waistSlider.onValueChanged.AddListener(WaistChange);
+        muscleSlider.onValueChanged.AddListener(MuscleChange);
         for (int i = 0; i < skinColorButtons.Length; i++)
         {
             int index = i; // Local copy for the closure
@@ -45,6 +47,7 @@ public class CharacterCreator : MonoBehaviour
         heightSlider.onValueChanged.RemoveListener(HeightChange);
         weightSlider.onValueChanged.RemoveListener(WeightChange);
         waistSlider.onValueChanged.RemoveListener(WaistChange);
+        muscleSlider.onValueChanged.RemoveListener(MuscleChange);
         foreach (var button in skinColorButtons)
         {
             button.onClick.RemoveAllListeners();
@@ -65,6 +68,7 @@ public class CharacterCreator : MonoBehaviour
         heightSlider.value = dna["height"].Get();
         weightSlider.value = dna["belly"].Get();
         waistSlider.value = dna["waist"].Get();
+        muscleSlider.value = dna["upperMuscle"].Get();
     }
 
     public void HeightChange(float val)
@@ -82,6 +86,11 @@ public class CharacterCreator : MonoBehaviour
     public void WaistChange(float val)
     {
         dna["waist"].Set(val);
+        avatar.BuildCharacter();
+    }
+    public void MuscleChange(float val)
+    {
+        dna["upperMuscle"].Set(val);
         avatar.BuildCharacter();
     }
     public void ChangeSkinColor(int index)

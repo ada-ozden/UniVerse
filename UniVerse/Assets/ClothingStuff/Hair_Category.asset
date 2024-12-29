@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ccda852dc68bb449b6a02d1966b0dc, type: 3}
+  m_Name: Hair_Category
+  m_EditorClassIdentifier: 
+  CategoryName: Hair
+  Items:
+  - Name: FemaleHair1
+    Thumbnail: {fileID: 21300000, guid: 9251b7659b1755b4598c139a22b53f68, type: 3}
+    SlotName: Hair
+    OverlayName: FemaleHair1
+  - Name: FemaleHair2
+    Thumbnail: {fileID: 21300000, guid: 0c6c64ba531650143a7c8b7ed0a384c1, type: 3}
+    SlotName: Hair
+    OverlayName: FemaleHair2
+  - Name: FemaleHair3
+    Thumbnail: {fileID: 21300000, guid: 960e71b464e944d4aa1c211660c920ff, type: 3}
+    SlotName: Hair
+    OverlayName: FemaleHair3
+  - Name: FemaleHair4
+    Thumbnail: {fileID: 21300000, guid: 7cb71cb72d424a2439caaa3be3fa1144, type: 3}
+    SlotName: Hair
+    OverlayName: FemaleLongHair
+  - Name: FemaleHair5
+    Thumbnail: {fileID: 21300000, guid: 3066bf379579eda47bdb4ea28043d592, type: 3}
+    SlotName: Hair
+    OverlayName: FemalePonyTail
