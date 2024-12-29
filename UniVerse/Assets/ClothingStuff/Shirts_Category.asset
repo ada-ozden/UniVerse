@@ -33,4 +33,4 @@ MonoBehaviour:
   - Name: FemaleShirt5
     Thumbnail: {fileID: 21300000, guid: 2b6c6c9f94f5b2e46b5de3aae5b507ef, type: 3}
     SlotName: Chest
-    OverlayName: FemaleTankTop
+    OverlayName: FemaleTankTop_Recipe

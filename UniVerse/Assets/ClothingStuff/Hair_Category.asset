@@ -29,8 +29,8 @@ MonoBehaviour:
   - Name: FemaleHair4
     Thumbnail: {fileID: 21300000, guid: 7cb71cb72d424a2439caaa3be3fa1144, type: 3}
     SlotName: Hair
-    OverlayName: FemaleLongHair
+    OverlayName: FemaleLongHair_Recipe
   - Name: FemaleHair5
     Thumbnail: {fileID: 21300000, guid: 3066bf379579eda47bdb4ea28043d592, type: 3}
     SlotName: Hair
-    OverlayName: FemalePonyTail
+    OverlayName: FemalePonyTail_Recipe

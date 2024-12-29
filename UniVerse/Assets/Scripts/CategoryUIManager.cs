@@ -1,121 +1,97 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UMA;
+using UMA.CharacterSystem;
 
 public class CategoryUIManager : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private GameObject ThumbnailButtonPrefab; // Prefab for a thumbnail button
-    [SerializeField] private Transform ScrollViewContent; // The "Content" object in the Scroll View
+    [SerializeField] private GameObject ThumbnailButtonPrefab;
+    [SerializeField] private Transform ScrollViewContent;
 
     [Header("Categories")]
-    public ClothingCategory[] Categories; // Array of categories (Hair, Shoes, etc.)
+    public ClothingCategory[] Categories;
 
-    // Called when a category button is pressed (e.g., "Tops", "Shoes")
+    [Header("UMA References")]
+    [SerializeField] private DynamicCharacterAvatar avatar; // Reference to the UMA character
+
     public void OnCategoryButtonPressed(string categoryName)
-{
-    // Check if Categories array is null or empty
-    if (Categories == null || Categories.Length == 0)
     {
-        Debug.LogError("Categories array is not populated.");
-        return;
-    }
-
-    // Clear existing thumbnails
-    foreach (Transform child in ScrollViewContent)
-    {
-        Destroy(child.gameObject);
-    }
-
-    // Find the selected category
-    bool categoryFound = false;  // Track if category is found
-    foreach (var category in Categories)
-    {
-        if (category.CategoryName == categoryName)
+        if (Categories == null || Categories.Length == 0)
         {
-            categoryFound = true;
+            Debug.LogError("Categories array is not populated.");
+            return;
+        }
 
-            // Check if the Items list is null or empty
-            if (category.Items == null || category.Items.Count == 0)
-            {
-                Debug.LogWarning($"Category {categoryName} has no items.");
-                continue;
-            }
+        foreach (Transform child in ScrollViewContent)
+        {
+            Destroy(child.gameObject);
+        }
 
-            // Populate thumbnails
-            foreach (var item in category.Items)
+        bool categoryFound = false;
+        foreach (var category in Categories)
+        {
+            if (category.CategoryName == categoryName)
             {
-                if (item == null)
+                categoryFound = true;
+
+                if (category.Items == null || category.Items.Count == 0)
                 {
-                    Debug.LogWarning("Found null item in category.");
+                    Debug.LogWarning($"Category {categoryName} has no items.");
                     continue;
                 }
 
-                GameObject button = Instantiate(ThumbnailButtonPrefab, ScrollViewContent);
-                if (button == null)
+                foreach (var item in category.Items)
                 {
-                    Debug.LogError("Button prefab is not assigned properly.");
-                    continue;
-                }
+                    if (item == null) continue;
 
-                // Look for the specific child named "Thumbnail" under the button
-                Transform thumbnailTransform = button.transform.Find("Thumbnail");
+                    GameObject button = Instantiate(ThumbnailButtonPrefab, ScrollViewContent);
+                    Transform thumbnailTransform = button.transform.Find("Thumbnail");
 
-                if (thumbnailTransform != null)
-                {
-                    // Get the Image component on the "Thumbnail" child
-                    Image buttonImage = thumbnailTransform.GetComponent<Image>();
-                    if (buttonImage != null)
+                    if (thumbnailTransform != null)
                     {
-                        buttonImage.sprite = item.Thumbnail; // Assign the sprite
-                        Debug.Log($"Thumbnail assigned: {buttonImage.sprite.name} for {item.Name}");
+                        Image buttonImage = thumbnailTransform.GetComponent<Image>();
+                        if (buttonImage != null)
+                        {
+                            buttonImage.sprite = item.Thumbnail;
+                        }
                     }
-                    else
+
+                    Button buttonComponent = button.GetComponent<Button>();
+                    if (buttonComponent != null)
                     {
-                    Debug.LogError("Image component not found on 'Thumbnail' child.");
+                        buttonComponent.onClick.AddListener(() => PreviewItem(item));
                     }
                 }
-                else
-                {
-                    Debug.LogError("Child 'Thumbnail' not found in the button prefab.");
-                }
-
-                Button buttonComponent = button.GetComponent<Button>();
-                if (buttonComponent != null)
-                {
-                    buttonComponent.onClick.AddListener(() => PreviewItem(item));
-                }
-                else
-                {
-                    Debug.LogError("Button component not found in ThumbnailButtonPrefab.");
-                }
+                break;
             }
-            break;
+        }
+
+        if (!categoryFound)
+        {
+            Debug.LogWarning($"Category {categoryName} not found.");
         }
     }
 
-    if (!categoryFound)
-    {
-        Debug.LogWarning($"Category {categoryName} not found.");
-    }
-}
-
-
-    // This method is called when an item button is pressed
     public void PreviewItem(ClothingItem item)
     {
-        // For now, just log the name of the item, but you can replace this with your logic to apply the item
         Debug.Log($"Previewing {item.Name} (Slot: {item.SlotName}, Overlay: {item.OverlayName})");
-
-        // For example, here you can apply the item to the character's UMA model:
-        // ApplyClothingToCharacter(item);
+        ApplyClothingToCharacter(item);
     }
 
-    // You can implement this method to apply the clothing item to your UMA character
     private void ApplyClothingToCharacter(ClothingItem item)
     {
-        // Example: Use the SlotName and OverlayName to apply the item to your UMA character.
-        // The actual implementation depends on how you're using UMA in your project.
-        // Example (this is just a placeholder and may require adjusting):
-        // UMACharacter.ApplyClothing(item.SlotName, item.OverlayName);
+        if (avatar == null)
+        {
+            Debug.LogError("DynamicCharacterAvatar is not assigned.");
+            return;
+        }
+
+        // Remove the previous slot and apply the new one
+        avatar.SetSlot(item.SlotName, item.OverlayName);
+
+        // Update the UMA character to apply the changes
+        avatar.BuildCharacter();
     }
 }
+
