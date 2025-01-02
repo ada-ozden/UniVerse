@@ -1,25 +1,34 @@
 using UnityEngine;
+using TMPro;
 
 public class FriendListManager : MonoBehaviour
 {
-    public GameObject listElementPrefab;  // Prefab'i buraya bırak
+    public GameObject listElementPrefab; // Prefab'i buraya bırak
     public Transform content;            // Scroll View'un Content objesini buraya sürükleyin
 
     void Start()
     {
-        // Örnek olarak birkaç arkadaş ekleyelim
-        //while()
-        for (int i = 0; i < 10; i++)
+        // PlayerPrefs'ten arkadaş eklemeyi al
+        if (PlayerPrefs.HasKey("FriendToAdd"))
         {
-            // Prefab'ı Content içine ekle
-            GameObject listElement = Instantiate(listElementPrefab, content);
+            string friendName = PlayerPrefs.GetString("FriendToAdd");
+            AddFriendToList(friendName);
 
-            // Prefab üzerindeki Text alanını güncelle
-            var textComponent = listElement.GetComponentInChildren<UnityEngine.UI.Text>();
-            if (textComponent != null)
-            {
-                textComponent.text = "Arkadaş " + (i + 1);
-            }
+            // Eklenmiş arkadaş adını temizle
+            PlayerPrefs.DeleteKey("FriendToAdd");
+            PlayerPrefs.Save();
+        }
+    }
+
+    void AddFriendToList(string friendName)
+    {
+        // Yeni liste elemanını oluştur
+        GameObject listElement = Instantiate(listElementPrefab, content);
+
+        var textComponent = listElement.GetComponentInChildren<TMP_Text>();
+        if (textComponent != null)
+        {
+            textComponent.text = friendName;
         }
     }
 }
