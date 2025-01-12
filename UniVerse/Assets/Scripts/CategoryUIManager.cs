@@ -17,30 +17,15 @@ public class CategoryUIManager : MonoBehaviour
 
     public void OnCategoryButtonPressed(string categoryName)
     {
-        if (Categories == null || Categories.Length == 0)
-        {
-            Debug.LogError("Categories array is not populated.");
-            return;
-        }
-
         foreach (Transform child in ScrollViewContent)
         {
             Destroy(child.gameObject);
         }
 
-        bool categoryFound = false;
         foreach (var category in Categories)
         {
             if (category.CategoryName == categoryName)
             {
-                categoryFound = true;
-
-                if (category.Items == null || category.Items.Count == 0)
-                {
-                    Debug.LogWarning($"Category {categoryName} has no items.");
-                    continue;
-                }
-
                 foreach (var item in category.Items)
                 {
                     if (item == null) continue;
@@ -66,27 +51,15 @@ public class CategoryUIManager : MonoBehaviour
                 break;
             }
         }
-
-        if (!categoryFound)
-        {
-            Debug.LogWarning($"Category {categoryName} not found.");
-        }
     }
 
     public void PreviewItem(ClothingItem item)
     {
-        Debug.Log($"Previewing {item.Name} (Slot: {item.SlotName}, Overlay: {item.OverlayName})");
         ApplyClothingToCharacter(item);
     }
 
     private void ApplyClothingToCharacter(ClothingItem item)
     {
-        if (avatar == null)
-        {
-            Debug.LogError("DynamicCharacterAvatar is not assigned.");
-            return;
-        }
-
         // Remove the previous slot and apply the new one
         avatar.SetSlot(item.SlotName, item.OverlayName);
 
