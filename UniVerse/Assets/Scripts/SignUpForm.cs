@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Scene Manager kütüphanesini ekliyoruz
 using UnityEngine.UI;
 using TMPro;
 using Firebase;
@@ -20,7 +20,16 @@ public class SignUpForm : MonoBehaviour
     [SerializeField] private Toggle erkekToggle;
     [SerializeField] private TMP_Dropdown bolumDropdown;
     [SerializeField] private Button kaydolBtn;
-    [SerializeField] private TextMeshProUGUI generalErrorText;
+
+    [SerializeField] private TextMeshProUGUI adErrorText;
+    [SerializeField] private TextMeshProUGUI soyadErrorText;
+    [SerializeField] private TextMeshProUGUI kullaniciAdiErrorText;
+    [SerializeField] private TextMeshProUGUI emailErrorText;
+    [SerializeField] private TextMeshProUGUI emailControlErrorText;
+    [SerializeField] private TextMeshProUGUI sifreErrorText;
+    [SerializeField] private TextMeshProUGUI cinsiyetErrorText;
+    [SerializeField] private TextMeshProUGUI bolumErrorText;
+    [SerializeField] private TextMeshProUGUI successMessageText;
 
     private FirebaseAuth auth;
     private FirebaseFirestore firestore;
@@ -37,85 +46,121 @@ public class SignUpForm : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
+                Debug.LogError("Firebase dependencies could not be resolved: " + dependencyStatus);
             }
         });
 
         if (kaydolBtn == null)
         {
-            Debug.LogError("Button not assigned!");
+            Debug.LogError("Signup button not assigned!");
         }
         else
         {
             kaydolBtn.onClick.AddListener(OnSignUpButtonClicked);
-            Debug.Log("Listener added to the button.");
+            Debug.Log("Listener added to signup button.");
         }
+
+        ResetErrorTexts();
+        successMessageText.gameObject.SetActive(false); // Hide success message initially
     }
 
     void InitializeFirebase()
     {
         auth = FirebaseAuth.DefaultInstance;
         firestore = FirebaseFirestore.DefaultInstance;
+
+        // Firebase kullanıcı oturum açıldığında doğrulama durumunu kontrol et.
+        auth.StateChanged += (sender, e) => {
+            if (auth.CurrentUser != null)
+            {
+                CheckEmailVerificationStatus(auth.CurrentUser).ContinueWith(task =>
+                {
+                    if (task.IsFaulted)
+                    {
+                        Debug.Log("Error checking email verification status: " + task.Exception);
+                    }
+                    else if (task.IsCompleted)
+                    {
+                        // Email doğrulandıysa login sahnesine geçiş yap
+                        bool emailVerified = task.Result;
+                        if (emailVerified)
+                        {
+                            SceneManager.LoadScene("LoginScene"); // Login sahnesine geçiş
+                        }
+                    }
+                });
+            }
+        };
     }
 
     public void OnSignUpButtonClicked()
     {
         if (isSubmitting) return;
 
-        generalErrorText.text = "";
-        generalErrorText.gameObject.SetActive(false);
+        ResetErrorTexts();
 
-        string ad = adInputField.text;
-        string soyad = soyadInputField.text;
-        string kullaniciAdi = kullaniciAdiInputField.text;
-        string email = emailInputField.text;
-        string sifre = sifreInputField.text;
-        string cinsiyet = kadinToggle.isOn ? "Kadın" : erkekToggle.isOn ? "Erkek" : "";
+        string ad = adInputField.text.Trim();
+        string soyad = soyadInputField.text.Trim();
+        string kullaniciAdi = kullaniciAdiInputField.text.Trim();
+        string email = emailInputField.text.Trim();
+        string sifre = sifreInputField.text.Trim();
         string bolum = bolumDropdown.options[bolumDropdown.value].text;
+        string cinsiyet = kadinToggle.isOn ? "Kadın" : erkekToggle.isOn ? "Erkek" : "";
 
-        StringBuilder errorBuilder = new StringBuilder();
         bool isValid = true;
 
         if (string.IsNullOrWhiteSpace(ad))
         {
             isValid = false;
-            errorBuilder.AppendLine("Ad alani bos olamaz.");
+            adErrorText.text = "Ad alanı boş olamaz.";
+            adErrorText.gameObject.SetActive(true);
         }
         if (string.IsNullOrWhiteSpace(soyad))
         {
             isValid = false;
-            errorBuilder.AppendLine("Soyad alani bos olamaz.");
+            soyadErrorText.text = "Soyad alanı boş olamaz.";
+            soyadErrorText.gameObject.SetActive(true);
         }
         if (!IsValidUsername(kullaniciAdi))
         {
             isValid = false;
-            errorBuilder.AppendLine("Kullanici adi 3-15 karakter uzunlugunda olmali.");
+            kullaniciAdiErrorText.text = "Kullanıcı adı 3-15 karakter uzunluğunda olmalı.";
+            kullaniciAdiErrorText.gameObject.SetActive(true);
         }
         if (string.IsNullOrWhiteSpace(email))
         {
             isValid = false;
-            errorBuilder.AppendLine("E-posta alani bos olamaz.");
+            emailErrorText.text = "E-posta alanı boş olamaz.";
+            emailErrorText.gameObject.SetActive(true);
         }
         else if (!IsValidEmail(email))
         {
             isValid = false;
-            errorBuilder.AppendLine("Gecerli bir e-posta adresi girin.");
+            emailErrorText.text = "Geçerli bir e-posta adresi girin.";
+            emailErrorText.gameObject.SetActive(true);
         }
         if (!IsValidPassword(sifre))
         {
             isValid = false;
-            errorBuilder.AppendLine("Sifre 8-16 karakter arasinda olmali ve en az bir buyuk harf, bir kucuk harf, bir sayi ve bir ozel karakter icermelidir.");
+            sifreErrorText.text = "Şifre 8-16 karakter arasında olmalı ve en az bir büyük harf, bir küçük harf, bir sayı ve özel karakter içermelidir.";
+            sifreErrorText.gameObject.SetActive(true);
         }
-        if (string.IsNullOrWhiteSpace(cinsiyet))
+        if (string.IsNullOrEmpty(cinsiyet))
         {
             isValid = false;
-            errorBuilder.AppendLine("Cinsiyet secimi zorunludur.");
+            cinsiyetErrorText.text = "Cinsiyet seçimi zorunludur.";
+            cinsiyetErrorText.gameObject.SetActive(true);
+        }
+        if (bolum == "Bölümünüzü Seçiniz...")
+        {
+            isValid = false;
+            bolumErrorText.text = "Bölüm seçiniz.";
+            bolumErrorText.gameObject.SetActive(true);
         }
 
         if (!isValid)
         {
-            generalErrorText.text = errorBuilder.ToString();
-            generalErrorText.gameObject.SetActive(true);
+            isSubmitting = false;
             return;
         }
 
@@ -128,57 +173,136 @@ public class SignUpForm : MonoBehaviour
             kullaniciAdi = kullaniciAdi,
             email = email,
             cinsiyet = cinsiyet,
-            bolum = bolum
+            bolum = bolum,
+           
         };
 
-        // Firebase'e kaydet
-        RegisterUserInFirebase(userData, sifre);
+        // Hash the password before storing
+        string hashedPassword = PasswordHasher.HashPassword(sifre);
+
+        // Check if email exists and proceed
+        CheckIfEmailExists(userData, hashedPassword);
     }
 
-    private async void RegisterUserInFirebase(UserData userData, string sifre)
+    private async void CheckIfEmailExists(UserData userData, string hashedPassword)
     {
         try
         {
-            var authResult = await auth.CreateUserWithEmailAndPasswordAsync(userData.email, sifre);
+            Query query = firestore.Collection("users").WhereEqualTo("email", userData.email);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+
+            if (querySnapshot.Count > 0)
+            {
+                emailControlErrorText.text = "Bu e-posta adresi zaten var.";
+                emailControlErrorText.gameObject.SetActive(true);
+                isSubmitting = false;
+            }
+            else
+            {
+                await RegisterUserInFirebase(userData, hashedPassword);
+            }
+        }
+        catch (FirebaseException e)
+        {
+            Debug.LogError("E-posta kontrolü sırasında hata oluştu: " + e.Message);
+            emailErrorText.text = "E-posta kontrolü hatası: " + e.Message;
+            emailErrorText.gameObject.SetActive(true);
+            isSubmitting = false;
+        }
+    }
+
+    private async Task RegisterUserInFirebase(UserData userData, string hashedPassword)
+    {
+        try
+        {
+            var authResult = await auth.CreateUserWithEmailAndPasswordAsync(userData.email, hashedPassword);
             FirebaseUser newUser = authResult.User;
-            Debug.LogFormat("Firebase kullanıcı kaydı başarılı: {0} ({1})", newUser.DisplayName, newUser.UserId);
 
             UserProfile userProfile = new UserProfile { DisplayName = userData.kullaniciAdi };
             await newUser.UpdateUserProfileAsync(userProfile);
-            Debug.Log("Profil başarıyla güncellendi.");
 
-            // E-posta doğrulama gönder
             await newUser.SendEmailVerificationAsync();
-            Debug.Log("E-posta doğrulaması gönderildi: " + userData.email);
 
-            // Kullanıcı bilgilerini Firestore'a kaydet (şifre hariç)
             DocumentReference docRef = firestore.Collection("users").Document(newUser.UserId);
             var userDictionary = new Dictionary<string, object>
             {
-                { "userId", newUser.UserId }, // Unique userId
+                { "userId", newUser.UserId },
                 { "ad", userData.ad },
                 { "soyad", userData.soyad },
                 { "kullaniciAdi", userData.kullaniciAdi },
                 { "email", userData.email },
                 { "cinsiyet", userData.cinsiyet },
-                { "bolum", userData.bolum }
+                { "bolum", userData.bolum },
+                { "hashedPassword", hashedPassword }, // Şifreyi depolama
+                
             };
             await docRef.SetAsync(userDictionary);
-            Debug.Log("Kullanıcı bilgileri Firestore'a kaydedildi.");
 
-            // Kullanıcı adını AppManager'a ata
-            AppManager.Instance.userName = userData.kullaniciAdi;
+            // MiniOyunlar Koleksiyonu
+            CollectionReference miniGamesRef = docRef.Collection("MiniOyunlar");
+            var miniGameDictionary = new Dictionary<string, object>
+            {
+                { "oyunNo", 0 },
+                { "skor", 0 }
+            };
+            await miniGamesRef.AddAsync(miniGameDictionary);
+
+            // Purchases Koleksiyonu
+            CollectionReference purchasesRef = docRef.Collection("Purchases");
+            var purchaseDictionary = new Dictionary<string, object>
+            {
+                { "satın_alma_no", 0 },
+                { "urun_no", 0 },
+                { "bakiye", 100 }
+            };
+            await purchasesRef.AddAsync(purchaseDictionary);
+
+            // Ders Programı Koleksiyonu (ClassSchedule)
+            CollectionReference classScheduleRef = docRef.Collection("Ders_programı");
+            var classScheduleDictionary = new Dictionary<string, object>
+            {
+                { "dersKodu", "Bil443" },
+                { "dersSaati", "09:00 " },
+                { "dersGunu", "Pazartesi" }
+            };
+            await classScheduleRef.AddAsync(classScheduleDictionary);
+
+            // Başarılı kayıt mesajını göster
+            successMessageText.text = "Sisteme bilgileriniz kaydedildi. Emailinizi kontrol ediniz.";
+            successMessageText.gameObject.SetActive(true);
         }
         catch (FirebaseException e)
         {
             Debug.LogError("Firebase kullanıcı kaydı sırasında hata oluştu: " + e.Message);
-            generalErrorText.text = "Firebase kayıt hatası: " + e.Message;
-            generalErrorText.gameObject.SetActive(true);
+            emailErrorText.text = "Firebase kayıt hatası: " + e.Message;
+            emailErrorText.gameObject.SetActive(true);
         }
         finally
         {
             isSubmitting = false;
         }
+    }
+
+    private async Task<bool> CheckEmailVerificationStatus(FirebaseUser user)
+    {
+        if (user != null)
+        {
+            await user.ReloadAsync();
+            if (user.IsEmailVerified)
+            {
+                Debug.Log("Email doğrulandı.");
+                return true;
+            }
+            else
+            {
+                Debug.Log("Email henüz doğrulanmamış.");
+            }
+        }
+        else
+        {
+            Debug.Log("Kullanıcı oturumu yok veya kullanıcı bulunamadı.");
+        }
+        return false;
     }
 
     private bool IsValidUsername(string username)
@@ -197,7 +321,37 @@ public class SignUpForm : MonoBehaviour
                System.Text.RegularExpressions.Regex.IsMatch(password, @"[A-Z]") &&
                System.Text.RegularExpressions.Regex.IsMatch(password, @"[a-z]") &&
                System.Text.RegularExpressions.Regex.IsMatch(password, @"\d") &&
-               System.Text.RegularExpressions.Regex.IsMatch(password, @"[@$!%*?&]");
+               System.Text.RegularExpressions.Regex.IsMatch(password, @"[@$!%*?&.]");
+    }
+
+    private void ResetErrorTexts()
+    {
+        adErrorText.text = "";
+        adErrorText.gameObject.SetActive(false);
+
+        soyadErrorText.text = "";
+        soyadErrorText.gameObject.SetActive(false);
+
+        kullaniciAdiErrorText.text = "";
+        kullaniciAdiErrorText.gameObject.SetActive(false);
+
+        emailErrorText.text = "";
+        emailErrorText.gameObject.SetActive(false);
+
+        emailControlErrorText.text = "";
+        emailControlErrorText.gameObject.SetActive(false);
+
+        sifreErrorText.text = "";
+        sifreErrorText.gameObject.SetActive(false);
+
+        cinsiyetErrorText.text = "";
+        cinsiyetErrorText.gameObject.SetActive(false);
+
+        bolumErrorText.text = "";
+        bolumErrorText.gameObject.SetActive(false);
+
+        successMessageText.text = ""; // Başarılı kayıt mesajını sıfırlama
+        successMessageText.gameObject.SetActive(false); // Başarılı kayıt mesajını gizleme
     }
 }
 
@@ -205,7 +359,7 @@ public class SignUpForm : MonoBehaviour
 public class UserData
 {
     [FirestoreProperty]
-    public string userId { get; set; } // benzersiz User id
+    public string userId { get; set; }
 
     [FirestoreProperty]
     public string ad { get; set; }
@@ -224,4 +378,6 @@ public class UserData
 
     [FirestoreProperty]
     public string bolum { get; set; }
+
+
 }

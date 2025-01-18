@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Firebase;
-using Firebase.Auth;
+using Firebase.Firestore;
 using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class LoginControl : MonoBehaviour
@@ -11,9 +12,13 @@ public class LoginControl : MonoBehaviour
     [SerializeField] private TMP_InputField emailInputField;
     [SerializeField] private TMP_InputField sifreInputField;
     [SerializeField] private Button loginBtn;
-    [SerializeField] private string nextSceneName="GameScene";
+    [SerializeField] private TextMeshProUGUI emailErrorText;
+    [SerializeField] private TextMeshProUGUI emailControlErrorText;
+    [SerializeField] private TextMeshProUGUI sifreErrorText;
+    [SerializeField] private TextMeshProUGUI sifreControlErrorText;
+    [SerializeField] private string nextSceneName = "GameScene";
 
-    private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
 
     void Start()
     {
@@ -39,16 +44,21 @@ public class LoginControl : MonoBehaviour
             loginBtn.onClick.AddListener(OnLoginButtonClicked);
             Debug.Log("Listener added to the button.");
         }
+
+        ResetErrorTexts();
     }
 
     void InitializeFirebase()
     {
-        auth = FirebaseAuth.DefaultInstance;
+        firestore = FirebaseFirestore.DefaultInstance;
     }
 
     public void OnLoginButtonClicked()
     {
         Debug.Log("Giriş Yap button pressed");
+
+        // Hata mesajlarını sıfırlama
+        ResetErrorTexts();
 
         if (emailInputField == null || sifreInputField == null)
         {
@@ -56,51 +66,105 @@ public class LoginControl : MonoBehaviour
             return;
         }
 
-        string email = emailInputField.text;
-        string sifre = sifreInputField.text;
+        string email = emailInputField.text.Trim();
+        string sifre = sifreInputField.text.Trim();
 
-        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(sifre))
+        if (string.IsNullOrEmpty(email))
         {
-            Debug.LogWarning("Email veya Şifre boş olamaz.");
+            emailErrorText.text = "Email bos olamaz.";
+            emailErrorText.gameObject.SetActive(true);
+           
             return;
         }
 
-        // Firebase ile oturum açma işlemini başlatın
-        LoginUserFirebase(email, sifre);
+        if (string.IsNullOrEmpty(sifre))
+        {
+            sifreErrorText.text = "Sifre bos olamaz.";
+            sifreErrorText.gameObject.SetActive(true);
+            
+            return;
+        }
+
+        // Firestore ile oturum açma işlemini başlatın
+        LoginUserFirestore(email, sifre);
     }
 
-    private async void LoginUserFirebase(string email, string password)
+    private async void LoginUserFirestore(string email, string password)
     {
-        if (auth == null)
-        {
-            Debug.LogError("Firebase auth is not initialized!");
-            return;
-        }
-
         try
         {
-            var authResult = await auth.SignInWithEmailAndPasswordAsync(email, password);
-            FirebaseUser newUser = authResult.User;
-            Debug.LogFormat("Firebase kullanıcı giriş başarılı: {0} ({1})", newUser.DisplayName, newUser.UserId);
+            // Firestore'dan email ile kullanıcıyı sorgula
+            Query userQuery = firestore.Collection("users").WhereEqualTo("kullaniciAdi", email);
+            QuerySnapshot userQuerySnapshot = await userQuery.GetSnapshotAsync();
 
-            // E-posta doğrulamasını kontrol et
-            if (newUser.IsEmailVerified)
+            // İlk belgeyi al
+            DocumentSnapshot userDoc = userQuerySnapshot.Documents.FirstOrDefault();
+
+            if (userDoc == null)
             {
-              
-                
+                emailControlErrorText.text = "E-posta adresi hatali.";
+                emailControlErrorText.gameObject.SetActive(true);
+                Debug.LogError("Kullanıcı bulunamadı.");
+                return;
+            }
+
+            // Veritabanından hashlenmiş şifreyi al
+            string hashedPasswordInDb = userDoc.GetValue<string>("hashedPassword");
+
+            // Kullanıcının girdiği şifreyi hashle
+            string hashedPasswordInput = PasswordHasher.HashPassword(password);
+
+            // Hashlenmiş şifreleri karşılaştır
+            if (hashedPasswordInDb == hashedPasswordInput)
+            {
+                Debug.Log("Şifre doğru, giriş başarılı.");
                 SceneManager.LoadScene(nextSceneName);
             }
             else
             {
-                Debug.LogWarning("Kullanıcının e-posta adresi doğrulanmamış.");
-                Debug.LogWarning("Lütfen e-posta adresinizi doğrulayın.");
-                await newUser.SendEmailVerificationAsync();
-                Debug.Log("E-posta doğrulaması tekrar gönderildi: " + email);
+                sifreControlErrorText.text = "Sifre hatali.";
+                sifreControlErrorText.gameObject.SetActive(true);  // Hata mesajını görünür yap
+                
             }
         }
         catch (FirebaseException e)
         {
             Debug.LogError("Firebase giriş hatası: " + e.Message);
+            emailErrorText.text = "Firebase giriş hatası: " + e.Message;
+            emailErrorText.gameObject.SetActive(true);
+        }
+    }
+
+    private void ResetErrorTexts()
+    {
+        emailErrorText.text = "";
+        emailErrorText.gameObject.SetActive(false);
+
+        emailControlErrorText.text = "";
+        emailControlErrorText.gameObject.SetActive(false);
+
+        sifreErrorText.text = "";
+        sifreErrorText.gameObject.SetActive(false);
+
+        sifreControlErrorText.text = "";
+        sifreControlErrorText.gameObject.SetActive(false);
+    }
+}
+
+// Şifre hashleme için hasher sınıfı
+public static class PasswordHasher
+{
+    public static string HashPassword(string password)
+    {
+        using (var sha256 = System.Security.Cryptography.SHA256.Create())
+        {
+            var bytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            var builder = new System.Text.StringBuilder();
+            foreach (var b in bytes)
+            {
+                builder.Append(b.ToString("x2"));
+            }
+            return builder.ToString();
         }
     }
 }
