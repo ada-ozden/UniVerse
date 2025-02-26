@@ -112,49 +112,49 @@ public class SignUpForm : MonoBehaviour
         if (string.IsNullOrWhiteSpace(ad))
         {
             isValid = false;
-            adErrorText.text = "Ad alanı boş olamaz.";
+            adErrorText.text = "Ad alani bos olamaz.";
             adErrorText.gameObject.SetActive(true);
         }
         if (string.IsNullOrWhiteSpace(soyad))
         {
             isValid = false;
-            soyadErrorText.text = "Soyad alanı boş olamaz.";
+            soyadErrorText.text = "Soyad alani bos olamaz.";
             soyadErrorText.gameObject.SetActive(true);
         }
         if (!IsValidUsername(kullaniciAdi))
         {
             isValid = false;
-            kullaniciAdiErrorText.text = "Kullanıcı adı 3-15 karakter uzunluğunda olmalı.";
+            kullaniciAdiErrorText.text = "Kullanici adi 3-15 karakter uzunlugunda olmali.";
             kullaniciAdiErrorText.gameObject.SetActive(true);
         }
         if (string.IsNullOrWhiteSpace(email))
         {
             isValid = false;
-            emailErrorText.text = "E-posta alanı boş olamaz.";
+            emailErrorText.text = "E-posta alani bos olamaz.";
             emailErrorText.gameObject.SetActive(true);
         }
         else if (!IsValidEmail(email))
         {
             isValid = false;
-            emailErrorText.text = "Geçerli bir e-posta adresi girin.";
+            emailErrorText.text = "Gecerli bir e-posta adresi girin.";
             emailErrorText.gameObject.SetActive(true);
         }
         if (!IsValidPassword(sifre))
         {
             isValid = false;
-            sifreErrorText.text = "Şifre 8-16 karakter arasında olmalı ve en az bir büyük harf, bir küçük harf, bir sayı ve özel karakter içermelidir.";
+            sifreErrorText.text = "Sifre 8-16 karakter arasinda olmali ve en az bir buyuk harf, bir kucuk harf, bir sayı ve ozel karakter icermelidir.";
             sifreErrorText.gameObject.SetActive(true);
         }
         if (string.IsNullOrEmpty(cinsiyet))
         {
             isValid = false;
-            cinsiyetErrorText.text = "Cinsiyet seçimi zorunludur.";
+            cinsiyetErrorText.text = "Cinsiyet secimi zorunludur.";
             cinsiyetErrorText.gameObject.SetActive(true);
         }
         if (bolum == "Bölümünüzü Seçiniz...")
         {
             isValid = false;
-            bolumErrorText.text = "Bölüm seçiniz.";
+            bolumErrorText.text = "Bolum seciniz.";
             bolumErrorText.gameObject.SetActive(true);
         }
 
@@ -204,7 +204,7 @@ public class SignUpForm : MonoBehaviour
         }
         catch (FirebaseException e)
         {
-            Debug.LogError("E-posta kontrolü sırasında hata oluştu: " + e.Message);
+            Debug.LogError("E-posta kontrolu sirasinda hata olustu: " + e.Message);
             emailErrorText.text = "E-posta kontrolü hatası: " + e.Message;
             emailErrorText.gameObject.SetActive(true);
             isSubmitting = false;
