@@ -12,8 +12,14 @@ public class SearchListManager : MonoBehaviour
     public TMP_InputField searchInput;   // TextMeshPro'nun TMP_InputField'ını buraya sürükleyin
 
     private FirebaseFirestore firestore;
-    private List<string> allUsers = new List<string>();  // Kullanıcı adlarını tutacak liste
+    private List<UserData> allUsers = new List<UserData>();  // Kullanıcı verilerini tutacak liste
     private List<GameObject> instantiatedElements = new List<GameObject>();
+
+    private struct UserData
+    {
+        public string KullaniciAdi;
+        public string Bolum;
+    }
 
     void Start()
     {
@@ -21,7 +27,7 @@ public class SearchListManager : MonoBehaviour
         Debug.Log("Initializing Firebase Firestore...");
         firestore = FirebaseFirestore.DefaultInstance;
 
-        // Firestore'dan kullanıcı adlarını yükle
+        // Firestore'dan kullanıcı verilerini yükle
         Debug.Log("Loading users from Firestore...");
         LoadUsersFromFirestore();
 
@@ -38,14 +44,16 @@ public class SearchListManager : MonoBehaviour
                 QuerySnapshot snapshot = task.Result;
                 Debug.Log("Successfully retrieved snapshot from Firestore.");
 
-                // Her documentId'yi dolaşarak kullaniciAdi alanlarını çek
+                // Her documentId'yi dolaşarak kullaniciAdi ve bolum alanlarını çek
                 foreach (DocumentSnapshot document in snapshot.Documents)
                 {
                     if (document.ContainsField("kullaniciAdi"))
                     {
                         string kullaniciAdi = document.GetValue<string>("kullaniciAdi");
-                        allUsers.Add(kullaniciAdi);
-                        Debug.Log("User found: " + kullaniciAdi);  // Her bir kullanıcı adını logla
+                        string bolum = document.ContainsField("bolum") ? document.GetValue<string>("bolum") : "Bölüm Bilinmiyor";
+
+                        allUsers.Add(new UserData { KullaniciAdi = kullaniciAdi, Bolum = bolum });
+                        Debug.Log($"User found: {kullaniciAdi}, Bölüm: {bolum}");
                     }
                     else
                     {
@@ -53,7 +61,7 @@ public class SearchListManager : MonoBehaviour
                     }
                 }
 
-                // Kullanıcı adları yüklendikten sonra listeyi güncelle
+                // Kullanıcı verileri yüklendikten sonra listeyi güncelle
                 Debug.Log($"Total users loaded: {allUsers.Count}");
                 UpdateList(allUsers);
             }
@@ -64,7 +72,7 @@ public class SearchListManager : MonoBehaviour
         });
     }
 
-    void UpdateList(List<string> usersToShow)
+    void UpdateList(List<UserData> usersToShow)
     {
         // Önce mevcut listeyi temizle
         foreach (var element in instantiatedElements)
@@ -77,11 +85,18 @@ public class SearchListManager : MonoBehaviour
         foreach (var user in usersToShow)
         {
             GameObject listElement = Instantiate(listElementPrefab, content);
-
-            var textComponent = listElement.GetComponentInChildren<TMP_Text>();
-            if (textComponent != null)
+            
+            // Kullanıcı adı ve bölüm bilgilerini atayın
+            var textComponents = listElement.GetComponentsInChildren<TMP_Text>();
+            if (textComponents.Length >= 2)
             {
-                textComponent.text = user;
+                 textComponents[0].text = user.KullaniciAdi; // Kullanıcı adı
+                 textComponents[1].text = user.Bolum;        // Bölüm
+                 
+            }
+            else
+            {
+                Debug.LogWarning("List element doesn't contain enough TMP_Text components.");
             }
 
             instantiatedElements.Add(listElement);
@@ -91,7 +106,7 @@ public class SearchListManager : MonoBehaviour
     void FilterList(string searchText)
     {
         // Arama metnine göre listeyi filtrele
-        List<string> filteredUsers = allUsers.FindAll(user => user.ToLower().Contains(searchText.ToLower()));
+        List<UserData> filteredUsers = allUsers.FindAll(user => user.KullaniciAdi.ToLower().Contains(searchText.ToLower()));
 
         // Filtrelenmiş listeyi güncelle
         UpdateList(filteredUsers);
@@ -100,7 +115,7 @@ public class SearchListManager : MonoBehaviour
         Debug.Log("Filtered user count: " + filteredUsers.Count);
         foreach (var user in filteredUsers)
         {
-            Debug.Log("Filtered user: " + user);
+            Debug.Log("Filtered user: " + user.KullaniciAdi);
         }
     }
 }

@@ -6,6 +6,7 @@ using TMPro;
 public class SearchListElement : MonoBehaviour
 {
     public TMP_Text userNameText; // Kullanıcı Adı Text bileşeni
+    public TMP_Text departmentText;
     public Button addButton; // Ekle Button bileşeni
 
     private void Start()
@@ -18,6 +19,7 @@ public class SearchListElement : MonoBehaviour
     {
         // Kullanıcı adını PlayerPrefs'te kaydet
         string userName = userNameText.text;
+        string departmentName= departmentText.text;
         PlayerPrefs.SetString("FriendToAdd", userName);
         PlayerPrefs.Save();
 
