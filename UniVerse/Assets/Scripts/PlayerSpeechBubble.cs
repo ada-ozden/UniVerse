@@ -1,32 +1,73 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;  // For Button and InputField
+using TMPro;
+using UnityEngine.UI;
 using System.Collections;
+using Universe.FinalCharacterController;
+using Unity.Netcode;
+using UnityEngine.EventSystems;
 
-public class PlayerSpeechBubble : MonoBehaviour
+public class PlayerSpeechBubble : NetworkBehaviour
 {
-    public GameObject speechBubble;  // Speech bubble UI
-    public TextMeshProUGUI messageText; // Text inside the speech bubble
-    private float messageDuration = 3f;  // Time before the message disappears
+    public GameObject speechBubble;
+    public TextMeshProUGUI messageText;
+    private float messageDuration = 3f;
     private Coroutine messageCoroutine;
+    private TMP_InputField inputField;
+    private Button sendButton;
 
-    public TMP_InputField inputField;  // Reference to the InputField
-    public Button sendButton;          // Reference to the Send button
+    private PlayerLocomotionInput playerInput;
+    private NetworkVariable<string> networkMessage = new NetworkVariable<string>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     void Start()
     {
-        speechBubble.SetActive(false); // Hide bubble initially
+        speechBubble.SetActive(false);
 
-        sendButton.onClick.AddListener(OnSendMessage);  // Add listener for the button
+        if (!IsOwner) return;
+
+        inputField = GameManager.Instance.chatInput;
+        sendButton = GameManager.Instance.sendButton;
+
+        if (sendButton != null)
+            sendButton.onClick.AddListener(OnSendMessage);
+
+        playerInput = GetComponent<PlayerLocomotionInput>();
+
+        if (inputField != null)
+        {
+            inputField.characterLimit = 150;
+            inputField.onSelect.AddListener(delegate { playerInput.IsTyping = true; });
+            inputField.onDeselect.AddListener(delegate { playerInput.IsTyping = false; });
+        }
+    }
+
+    void Update()
+    {
+        if (!IsOwner) return;
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (!inputField.isFocused)
+            {
+                inputField.Select();
+                inputField.ActivateInputField();
+                playerInput.IsTyping = true;
+            }
+            else if (inputField.text.Trim().Length > 0)
+            {
+                OnSendMessage();
+            }
+        }
     }
 
     public void DisplayMessage(string message)
     {
         messageText.text = message;
-        speechBubble.SetActive(true); // Show speech bubble
+        speechBubble.SetActive(true);
 
         if (messageCoroutine != null)
+        {
             StopCoroutine(messageCoroutine);
+        }
 
         messageCoroutine = StartCoroutine(HideMessageAfterDelay());
     }
@@ -34,18 +75,30 @@ public class PlayerSpeechBubble : MonoBehaviour
     private IEnumerator HideMessageAfterDelay()
     {
         yield return new WaitForSeconds(messageDuration);
-        speechBubble.SetActive(false); // Hide speech bubble
+        speechBubble.SetActive(false);
     }
 
-    // Called when the player clicks the Send button
     private void OnSendMessage()
     {
-        string message = inputField.text;  // Get the text from the input field
-
-        if (!string.IsNullOrEmpty(message))  // Make sure the message isn't empty
+        string message = inputField.text.Trim();
+        if (message.Length > 0)
         {
-            DisplayMessage(message);  // Display the message in the speech bubble
-            inputField.text = "";  // Clear the input field
+            SendMessageToServerRpc(message);
+            inputField.text = "";
+            inputField.DeactivateInputField();
+            EventSystem.current.SetSelectedGameObject(null);
+            playerInput.IsTyping = false;
         }
+    }
+
+    [ServerRpc]
+    private void SendMessageToServerRpc(string message, ServerRpcParams rpcParams = default)
+    {
+        networkMessage.Value = message;
+    }
+
+    private void OnEnable()
+    {
+        networkMessage.OnValueChanged += (oldValue, newValue) => DisplayMessage(newValue);
     }
 }
