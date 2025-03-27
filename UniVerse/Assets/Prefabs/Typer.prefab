@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6143410016417607854}
-  - component: {fileID: 2298133134628974361}
+  - component: {fileID: 5993506916334626757}
   m_Layer: 0
   m_Name: Typer
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2298133134628974361
+--- !u!114 &5993506916334626757
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,6 +41,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6567326766532755948}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a54c90079a1df84da1f19986f4109da, type: 3}
+  m_Script: {fileID: 11500000, guid: df90fded8e387b7469e0fa61f4988b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  wordBank: {fileID: 0}
+  wordOutput: {fileID: 0}
+  remainingWord: 
+  currentWord: 
