@@ -4,11 +4,11 @@ public class NavigateScreen2 : MonoBehaviour
 {
     public void GoToPreviousScene()
     {
-        SceneManager.LoadScene("FirstScene");
+        SceneManager.LoadScene("LevelSelection");
     }
 
     public void GoToNextScene()
     {
-        SceneManager.LoadScene("GameScene3 1");
+        SceneManager.LoadScene("GameScene3 2");
     }
 }

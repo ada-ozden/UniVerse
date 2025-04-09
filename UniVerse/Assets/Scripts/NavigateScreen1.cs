@@ -5,7 +5,7 @@ public class NavigateScreen1 : MonoBehaviour
 {
     public void GoToPreviousScene()
     {
-        SceneManager.LoadScene("FirstScene");
+        SceneManager.LoadScene("LevelSelection");
     }
 
     public void GoToNextScene()
