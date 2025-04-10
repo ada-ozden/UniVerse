@@ -6,12 +6,17 @@ public class WordBank3 : MonoBehaviour
 {
     private List<string> originalWords = new List<string>()
    {
-    "Algoritmalar, bilgisayar biliminin yapısal taşlarıdır. Her probleme uygun bir algoritma bulunabilir.",
-    "Yazılım mühendisliği, bilgisayar sistemlerini kurma sanatıdır. Bu sistemler optimize edilmelidir.",
-    "Veri yapıları, bilgiyi düzenlemenin yollarını sunar. Bu yapıların verimli kullanılması önemlidir.",
-    "Sanal bellek, donanımın ötesine geçen bir tekniktir. Bellek yönetimi ile performans artar.",
-    "Protokoller, ağ iletişimlerinin kurallardır. Güvenli iletişim her zaman bir önceliktir.",
-    "İşletim sistemleri, cihazın yönetici yazılımıdır. Her kullanıcı için kişiselleştirilebilir."
+    "Algoritmalar, bilgisayar biliminin yapısal taşlarıdır. ",
+    "Veri yapıları, bilgiyi düzenlemenin yollarını sunar. ",
+    "Mühendislik tasarım süreci, probleme çözüm bulma odaklıdır.",
+    "Bilgisayar mühendisliği, algoritmaların gücünü kullanır.",
+    "Yazılımlar, donanımların verimli çalışmasını sağlar.",
+    "Veri yapıları, bilgiyi organize etmenin temel yoludur.",
+    "Sanal bellek, fiziksel bellekten tasarruf sağlar.",
+    "Protokoller, ağlar arası iletişim dilidir.",
+    "İşletim sistemleri, bilgisayar donanımlarını yönetir.",
+    "Mühendisliğin temeli, sistematik düşünce ve analizdir.",
+    "İşletim sistemleri, cihazın yönetici yazılımıdır."
 };
 
     private List<string> workingWords = new List<string>();

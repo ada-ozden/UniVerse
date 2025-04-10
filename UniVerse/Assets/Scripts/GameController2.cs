@@ -13,17 +13,21 @@ public class GameController2 : MonoBehaviour
     public WordBank2 wordBank;
     private int score;
     private float timeLimit = 60.0f;
+
+    public Image startButtonBackground;
+   
     private bool gameActive = false;
 
     void Start()
     {
         startButton.onClick.AddListener(StartGame);
-        timerText.text = "Time: " + timeLimit.ToString();
+        timerText.text = "Süre: " + timeLimit.ToString();
     }
 
     public void StartGame()
     {
         startButton.gameObject.SetActive(false);
+        startButtonBackground.gameObject.SetActive(false);
         gameActive = true;
         score = 0;
         StartCoroutine(GameTimer());
@@ -38,7 +42,7 @@ public class GameController2 : MonoBehaviour
         {
             yield return new WaitForSeconds(1f);
             timeRemaining--;
-            timerText.text = "Time: " + timeRemaining.ToString();
+            timerText.text = "Süre: " + timeRemaining.ToString();
 
             // Burada isterseniz bir sayaç UI güncelleyebilirsiniz
         }
@@ -51,7 +55,7 @@ public class GameController2 : MonoBehaviour
         if (wordBank.CheckWord(typedWord))
         {
             score++;
-            Debug.Log("Score: " + score);
+            Debug.Log("Final Skor: " + score);
         }
     }
 
@@ -59,7 +63,16 @@ public class GameController2 : MonoBehaviour
     {
         gameActive = false;
         startButton.gameObject.SetActive(true);
-        scoreText.text = "Final Score: " + score; // Oyun sonunda skoru göster
+        scoreText.text = "Skor: " + score; // Oyun sonunda skoru göster
         Debug.Log("Game Over! Final Score: " + score);
+    }
+     private IEnumerator ShowTimeUpMessage()
+    {
+        Debug.Log("Time's up!");
+        
+        yield return new WaitForSeconds(5f); // 5 saniye bekle
+        
+        startButton.gameObject.SetActive(true); // Ekrana geri döndüğünüzde butonu göster
+        startButtonBackground.gameObject.SetActive(true);
     }
 }

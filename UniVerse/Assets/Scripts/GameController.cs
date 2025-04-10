@@ -9,21 +9,27 @@ public class GameController : MonoBehaviour
     public Typer typer;
     public TMP_Text timerText;  // Sayaç için text
 
+     public TMP_Text timeUpText;
+
      public TMP_Text scoreText;
     public WordBank wordBank;
     private int score;
     private float timeLimit = 30.0f;
     private bool gameActive = false;
 
+    public Image startButtonBackground;
+
     void Start()
     {
         startButton.onClick.AddListener(StartGame);
-        timerText.text = "Time: " + timeLimit.ToString();
+        timerText.text = "Süre: " + timeLimit.ToString();
+        timeUpText.gameObject.SetActive(false); // Başlangıçta gizli
     }
 
     public void StartGame()
     {
         startButton.gameObject.SetActive(false);
+        startButtonBackground.gameObject.SetActive(false);
         gameActive = true;
         score = 0;
         StartCoroutine(GameTimer());
@@ -38,7 +44,7 @@ public class GameController : MonoBehaviour
         {
             yield return new WaitForSeconds(1f);
             timeRemaining--;
-            timerText.text = "Time: " + timeRemaining.ToString();
+            timerText.text = "Süre: " + timeRemaining.ToString();
 
             // Burada isterseniz bir sayaç UI güncelleyebilirsiniz
         }
@@ -59,7 +65,16 @@ public class GameController : MonoBehaviour
     {
         gameActive = false;
         startButton.gameObject.SetActive(true);
-        scoreText.text = "Final Score: " + score; // Oyun sonunda skoru göster
+        scoreText.text = "Skor: " + score; // Oyun sonunda skoru göster
         Debug.Log("Game Over! Final Score: " + score);
+    }
+     private IEnumerator ShowTimeUpMessage()
+    {
+        Debug.Log("Time's up!");
+        timeUpText.gameObject.SetActive(true); // Metni göster
+        yield return new WaitForSeconds(5f); // 5 saniye bekle
+        timeUpText.gameObject.SetActive(false); // Metni gizle
+        startButton.gameObject.SetActive(true); // Ekrana geri döndüğünüzde butonu göster
+        startButtonBackground.gameObject.SetActive(true);
     }
 }

@@ -6,11 +6,11 @@ public class WordBank2 : MonoBehaviour
 {
     private List<string> originalWords = new List<string>()
    {
-    "veritabanı Sistemleri", "veriYapısı", "yazılım", "donanım", 
-    "protokol", "derleyici", "sanalBellek", "parametre", 
-    "isletimSistemi", "yapay zeka", "derleme", "derin öğrenme", 
-    "fonksiyon", "dizin", "calistir", "deger", 
-    "baglanti", "bulut çözüm", "giris", "acikKaynak", "yedekleme"
+    "veritabanı Sistemleri", "veriYapısı", "yazılım",  
+    "nesne yönelimli programlama", "derleyici", "sanalBellek", "parametre", 
+    "programlama dilleri", "yapay zeka", "derleme", "derin öğrenme", 
+    "fonksiyon", "dizin", "veri madenciliği", "algoritma",
+     "bulut çözüm",  "derleme", "yedekleme", "sistem","sunucu","makine öğrenimi","regresyon","sıralama","arama",
 };
 
     private List<string> workingWords = new List<string>();

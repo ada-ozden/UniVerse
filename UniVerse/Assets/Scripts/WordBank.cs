@@ -6,7 +6,8 @@ public class WordBank : MonoBehaviour
 {
     private List<string> originalWords = new List<string>()
     {
-        "oyun","deneme","printf(hello)", "puan", "okul", "bulut","ders", "proje","kodlama projesi", 
+        "oyun","deneme","printf(hello)", "puan", "okul", "bulut","ders", "proje","kodlama projesi", "kredi", "sınav", "ödev", "test", "programlama", "yazılım", "geliştirme", "sistem", "veri", "analiz",
+        "ağ", "internet", "web", "uygulama", "mobil", "veritabanı", "yazılım mühendisliği", "bilgisayar", "donanım", "yazılım geliştirme", "programcı", "debugging",  "test etme", "performans", "optimizasyon", "güvenlik",
 
     };
 
