@@ -1,0 +1,7 @@
+UniVerse/Assets/JohnFarmer/Keyboard[[:space:]]Keys[[:space:]]&[[:space:]]Mouse[[:space:]]Sprites/PSB[[:space:]]File/WhiteKeyboard&MouseButtonSprites.psb filter=lfs diff=lfs merge=lfs -text
+UniVerse/Assets/JohnFarmer/Keyboard[[:space:]]Keys[[:space:]]&[[:space:]]Mouse[[:space:]]Sprites/PSB[[:space:]]File/*.psb filter=lfs diff=lfs merge=lfs -text
+*.psb filter=lfs diff=lfs merge=lfs -text
+UniVerse/Assets/Scenes/*.unity filter=lfs diff=lfs merge=lfs -text
+UniVerse/Assets/Prefabs/Capsule.prefab filter=lfs diff=lfs merge=lfs -text
+UniVerse/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_5_0.bundle filter=lfs diff=lfs merge=lfs -text
+UniVerse/Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_5_0.so filter=lfs diff=lfs merge=lfs -text
