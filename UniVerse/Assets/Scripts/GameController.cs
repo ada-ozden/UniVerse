@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     private float timeLimit = 30.0f;
     private bool gameActive = false;
     public Image startButtonBackground;
+    public AudioSource timeUpSound; // Ses kaynağı
 
     void Start()
     {
@@ -51,6 +52,11 @@ public class GameController : MonoBehaviour
             timeRemaining--;
             timerText.text = "Süre: " + timeRemaining.ToString();
         }
+          if (timeRemaining <= 0)
+        {
+            timeUpSound.Play(); // Süre bitince ses çal
+        }
+
         EndGame();
     }
 
