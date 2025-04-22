@@ -60,10 +60,13 @@ public class WordBank3 : MonoBehaviour
         }
         return newWord;
     }
-     public bool CheckWord(string word)
-    {
-        return originalWords.Contains(word);
-    }
+    public bool CheckWord(string word)
+{
+    string trimmedWord = word.Trim().ToLower(); // Boşlukları kaldır ve küçük harfe çevir
+    bool exists = originalWords.Any(original => original.ToLower().Trim() == trimmedWord);
+    Debug.Log("Checking word: " + trimmedWord + " - Exists: " + exists);
+    return exists;
+}
 
    
 }
