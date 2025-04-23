@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 using Universe.FinalCharacterController;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine.EventSystems;
 
 public class PlayerSpeechBubble : NetworkBehaviour
@@ -16,13 +16,15 @@ public class PlayerSpeechBubble : NetworkBehaviour
     private Button sendButton;
 
     private PlayerLocomotionInput playerInput;
-    private NetworkVariable<string> networkMessage = new NetworkVariable<string>("", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    [SyncVar(hook = nameof(OnMessageChanged))]
+    private string networkMessage = "";
 
     void Start()
     {
         speechBubble.SetActive(false);
 
-        if (!IsOwner) return;
+        // Use isLocalPlayer instead of isOwned
+        if (!isLocalPlayer) return;
 
         inputField = GameManager.Instance.chatInput;
         sendButton = GameManager.Instance.sendButton;
@@ -42,7 +44,7 @@ public class PlayerSpeechBubble : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!isLocalPlayer) return;
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
@@ -83,7 +85,7 @@ public class PlayerSpeechBubble : NetworkBehaviour
         string message = inputField.text.Trim();
         if (message.Length > 0)
         {
-            SendMessageToServerRpc(message);
+            CmdSendMessageToServer(message);
             inputField.text = "";
             inputField.DeactivateInputField();
             EventSystem.current.SetSelectedGameObject(null);
@@ -91,14 +93,14 @@ public class PlayerSpeechBubble : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void SendMessageToServerRpc(string message, ServerRpcParams rpcParams = default)
+    [Command]
+    private void CmdSendMessageToServer(string message)
     {
-        networkMessage.Value = message;
+        networkMessage = message;
     }
 
-    private void OnEnable()
+    private void OnMessageChanged(string oldValue, string newValue)
     {
-        networkMessage.OnValueChanged += (oldValue, newValue) => DisplayMessage(newValue);
+        DisplayMessage(newValue);
     }
 }
