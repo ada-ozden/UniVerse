@@ -4,7 +4,6 @@ using PlayFab;
 using PlayFab.ClientModels;
 using PlayFab.MultiplayerModels;
 using PlayFab.Networking;
-using PlayFab.PfEditor.EditorModels;
 using UnityEngine;
 
 public class ClientStartUp : MonoBehaviour
@@ -32,7 +31,7 @@ public class ClientStartUp : MonoBehaviour
         RequestMultiplayerServerRequest requestData=new RequestMultiplayerServerRequest
         {
             BuildId="25438e5e-1d23-4fd6-8788-487a41ca8bac",
-            SessionId = System.Guid.NewGuid().ToString(),
+            SessionId = "b5259d69-384a-45ad-b873-d7aecb3ff871",
             PreferredRegions=new List<string>{"NorthEurope"}
         };
 
