@@ -30,9 +30,9 @@ public class ClientStartUp : MonoBehaviour
         Debug.Log(message:"[ClientStartup].RequestMultiplayerServer");
         RequestMultiplayerServerRequest requestData=new RequestMultiplayerServerRequest
         {
-            BuildId="25438e5e-1d23-4fd6-8788-487a41ca8bac",
-            SessionId = "b5259d69-384a-45ad-b873-d7aecb3ff871",
-            PreferredRegions=new List<string>{"NorthEurope"}
+            BuildId="fa15de48-8e61-4b5f-9dec-61e8672cc075",
+            SessionId = System.Guid.NewGuid().ToString(),//System.Guid.NewGuid().ToString()
+            PreferredRegions=new List<string>{"WestEurope"}
         };
 
         PlayFabMultiplayerAPI.RequestMultiplayerServer(requestData,OnRequestMultiplayerServer,OnRequestMultiplayerServerError);
