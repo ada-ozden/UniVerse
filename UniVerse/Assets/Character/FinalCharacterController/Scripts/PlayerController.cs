@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using Cinemachine;
 
 namespace Universe.FinalCharacterController
 {
@@ -11,6 +12,8 @@ namespace Universe.FinalCharacterController
         [Header("Components")]
         [SerializeField] private CharacterController _cc;
         [SerializeField] private Camera _playerCamera;
+        [SerializeField] Camera mainCam;
+        [SerializeField] private CinemachineVirtualCamera virtualCam;
 
         [Header("Movement Settings")]
         public float runAcceleration = 50f;
@@ -25,11 +28,20 @@ namespace Universe.FinalCharacterController
         private PlayerLocomotionInput _input;
         private Vector2              _cameraRot = Vector2.zero;
 
+        void Awake()
+        {
+            // Başlangıçta tüm prefab’lerde kamerayı kapat:
+            mainCam.gameObject.SetActive(false);
+            virtualCam.gameObject.SetActive(false);
+        }
+
         public override void OnStartLocalPlayer()
         {
             // Yerel oyuncu başladığında component referanslarını alıyoruz
             _cc    = GetComponent<CharacterController>();
             _input = GetComponent<PlayerLocomotionInput>();
+            mainCam.gameObject.SetActive(true);
+            virtualCam.gameObject.SetActive(true);
         }
 
         private void Update()
