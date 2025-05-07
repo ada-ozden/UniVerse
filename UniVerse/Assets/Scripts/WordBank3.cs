@@ -16,7 +16,15 @@ public class WordBank3 : MonoBehaviour
     "Protokoller, ağlar arası iletişim dilidir.",
     "İşletim sistemleri, bilgisayar donanımlarını yönetir.",
     "Mühendisliğin temeli, sistematik düşünce ve analizdir.",
-    "İşletim sistemleri, cihazın yönetici yazılımıdır."
+    "İşletim sistemleri, cihazın yönetici yazılımıdır.",
+     "Ağ güvenliği, veriyi korumanın vazgeçilmez bir parçasıdır.",
+    "Kodlama, problemleri çözmede yaratıcı bir süreçtir.",
+    "Dizüstü bilgisayarlar, taşınabilir bilgi işlem cihazlarıdır.",
+    "Yazılım mühendisliği, kullanıcı ihtiyaçlarını analiz eder.",
+    "Bilgisayar sistemleri, bilgi işlemin kalbinde yer alır.",
+    "Kullanıcı arayüzleri, etkileşimli deneyimler sağlar.",
+    "Makine öğrenmesi, bilgiyi işleyip sonuç çıkarır.",
+    "İnternet, bilgiye erişimi hızlandıran bir altyapıdır."
 };
 
     private List<string> workingWords = new List<string>();

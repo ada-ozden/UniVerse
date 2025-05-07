@@ -104,7 +104,7 @@ public class GameController3 : MonoBehaviour
     
         // Önceki puanı al, yoksa başlangıç puanını ayarla
         baseScore = PlayerPrefs.GetInt("TotalScore", 100);
-        totalScoreText.text = "Puan: " + baseScore.ToString();
+        totalScoreText.text = "UniCoin: " + baseScore.ToString();
     }
 
     public void StartGame()
