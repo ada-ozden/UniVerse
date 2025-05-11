@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ccda852dc68bb449b6a02d1966b0dc, type: 3}
+  m_Name: Shirts_CategoryMale
+  m_EditorClassIdentifier: 
+  CategoryName: Shirts
+  Items:
+  - Name: MaleShirt1
+    Thumbnail: {fileID: 21300000, guid: 94d8c9f73bf8bc9479a7297fc4a80c0d, type: 3}
+    SlotName: Chest
+    OverlayName: MaleHoodie_Recipe
+  - Name: MaleShirt2
+    Thumbnail: {fileID: 21300000, guid: 06d102be9c57638469a4ed816a865258, type: 3}
+    SlotName: Chest
+    OverlayName: MaleShirt1
+  - Name: MaleShirt3
+    Thumbnail: {fileID: 21300000, guid: aba5e6fac6e9c0d4fa591ec5e9ba4d91, type: 3}
+    SlotName: Chest
+    OverlayName: MaleShirt2
+  - Name: MaleShirt4
+    Thumbnail: {fileID: 21300000, guid: bd490c146a600634a825cbd18d22c7b5, type: 3}
+    SlotName: Chest
+    OverlayName: MaleShirt3

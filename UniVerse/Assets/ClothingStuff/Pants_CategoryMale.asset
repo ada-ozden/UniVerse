@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2ccda852dc68bb449b6a02d1966b0dc, type: 3}
+  m_Name: Pants_CategoryMale
+  m_EditorClassIdentifier: 
+  CategoryName: Pants
+  Items:
+  - Name: MalePants1
+    Thumbnail: {fileID: 21300000, guid: 06c1542c7cf3b3e408acb8c111b8b7e0, type: 3}
+    SlotName: Legs
+    OverlayName: MaleJeans
+  - Name: MalePants2
+    Thumbnail: {fileID: 21300000, guid: b42f0e2b795381c449a12f6434dcdc7e, type: 3}
+    SlotName: Legs
+    OverlayName: MaleJeans1
+  - Name: MalePants3
+    Thumbnail: {fileID: 21300000, guid: 43292ba35cc4c72409500fa148747bdb, type: 3}
+    SlotName: Legs
+    OverlayName: MalePants
+  - Name: MalePants4
+    Thumbnail: {fileID: 21300000, guid: c2e262b66fc929a4da343e390446355b, type: 3}
+    SlotName: Legs
+    OverlayName: MaleShorts1
+  - Name: MalePants5
+    Thumbnail: {fileID: 21300000, guid: d61367438ff7c784f9b98c566a6b5255, type: 3}
+    SlotName: Legs
+    OverlayName: MaleShorts2
+  - Name: MalePants6
+    Thumbnail: {fileID: 21300000, guid: f6281cd595ccbae47a8f47c826554b54, type: 3}
+    SlotName: Legs
+    OverlayName: MaleSweatPants_Recipe
