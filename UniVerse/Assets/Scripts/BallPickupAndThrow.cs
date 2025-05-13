@@ -55,6 +55,7 @@ public class BallPickupAndThrow : MonoBehaviour
         transform.localScale = Vector3.one;
         rb.velocity = Vector3.zero; // Reset existing velocity
         rb.AddForce(ballHolder.forward * throwForce);
+        rb.AddTorque(Random.insideUnitSphere * 10f);
     }
 
     void TryPickup()
