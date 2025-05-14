@@ -2677,7 +2677,7 @@ MonoBehaviour:
   sifreInputField: {fileID: 1462775353}
   loginBtn: {fileID: 462858807}
   emailErrorText: {fileID: 876258163}
-  emailControlErrorText: {fileID: 0}
+  emailControlErrorText: {fileID: 288683821}
   sifreErrorText: {fileID: 1643193784}
   sifreControlErrorText: {fileID: 697076964}
   nextSceneName: GameScene
