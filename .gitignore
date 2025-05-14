@@ -1,7 +1,7 @@
 # Ignore hidden files and folders (e.g. .DS_Store)
 .*
 !.gitignore
-
+!.gitattributes
 # OS-specific files
 .DS_Store
 Thumbs.db
