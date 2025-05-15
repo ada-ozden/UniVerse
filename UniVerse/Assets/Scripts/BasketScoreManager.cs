@@ -1,10 +1,13 @@
 using UnityEngine;
+using TMPro; // Eğer TextMeshPro kullanıyorsan
 
 public class BasketScoreManager : MonoBehaviour
 {
-    public Transform ball;             // Assign the Basketball object
-    public Transform player;           // Assign the player object
-    public Collider twoPointZone;      // Assign the 2-point zone collider
+    public Transform ball;
+    public Transform player;
+    public Collider twoPointZone;
+
+    public TMP_Text scoreText; // UI Text nesnesini buraya sürükle
 
     private int score = 0;
 
@@ -13,8 +16,7 @@ public class BasketScoreManager : MonoBehaviour
         if (other.transform == ball)
         {
             Rigidbody ballRb = ball.GetComponent<Rigidbody>();
-            
-            // Only score if ball is moving downward
+
             if (ballRb.velocity.y < 0)
             {
                 bool isInTwoPointZone = twoPointZone.bounds.Contains(player.position);
@@ -29,7 +31,15 @@ public class BasketScoreManager : MonoBehaviour
                     score += 3;
                     Debug.Log("3 puan! Toplam puan: " + score);
                 }
+
+                UpdateScoreText(); // UI'yı güncelle
             }
         }
     }
+
+    void UpdateScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
 }
+
