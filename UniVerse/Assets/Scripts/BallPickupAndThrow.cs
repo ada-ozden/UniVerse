@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Slider için
+using UnityEngine.UI;
 
 public class BallPickupAndThrow : MonoBehaviour
 {
@@ -7,14 +7,16 @@ public class BallPickupAndThrow : MonoBehaviour
     public float minThrowForce = 300f;
     public float maxThrowForce = 1000f;
     public float chargeSpeed = 500f;
-    public Slider powerSlider; // Sağ alttaki bar
+    public Slider powerSlider;
+
+    public BallTrajectory trajectoryVisualizer;
 
     private float currentThrowForce;
     private bool isCharging = false;
+    private bool isHeld = true;
 
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Collider col;
-    private bool isHeld = true;
 
     void Start()
     {
@@ -39,21 +41,40 @@ public class BallPickupAndThrow : MonoBehaviour
             {
                 isCharging = true;
                 currentThrowForce = minThrowForce;
-                powerSlider.gameObject.SetActive(true);
+
+                if (powerSlider != null)
+                {
+                    powerSlider.value = currentThrowForce;
+                    powerSlider.gameObject.SetActive(true);
+                }
             }
 
             if (isCharging)
             {
                 currentThrowForce += chargeSpeed * Time.deltaTime;
                 currentThrowForce = Mathf.Clamp(currentThrowForce, minThrowForce, maxThrowForce);
-                powerSlider.value = currentThrowForce;
+
+                if (powerSlider != null)
+                    powerSlider.value = currentThrowForce;
+
+                if (trajectoryVisualizer != null)
+                {
+                    Vector3 force = ballHolder.forward * currentThrowForce;
+                    trajectoryVisualizer.ShowTrajectory(rb, force);
+                }
             }
 
             if (Input.GetKeyUp(KeyCode.Space))
             {
                 isCharging = false;
-                ThrowBall();
-                powerSlider.gameObject.SetActive(false);
+
+                if (powerSlider != null)
+                    powerSlider.gameObject.SetActive(false);
+
+                if (trajectoryVisualizer != null)
+                    trajectoryVisualizer.HideTrajectory();
+
+                ThrowBall(currentThrowForce);
             }
         }
         else if (Input.GetKeyDown(KeyCode.F))
@@ -74,7 +95,7 @@ public class BallPickupAndThrow : MonoBehaviour
         transform.localScale = Vector3.one;
     }
 
-    void ThrowBall()
+    void ThrowBall(float force)
     {
         isHeld = false;
 
@@ -83,7 +104,7 @@ public class BallPickupAndThrow : MonoBehaviour
         col.enabled = true;
 
         rb.velocity = Vector3.zero;
-        rb.AddForce(ballHolder.forward * currentThrowForce);
+        rb.AddForce(ballHolder.forward * force);
         rb.AddTorque(Random.insideUnitSphere * 10f);
     }
 
