@@ -1,31 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI; // Slider için
 
 public class BallPickupAndThrow : MonoBehaviour
 {
-    public Transform ballHolder;         // Assign this to the BallHolder under First Person Camera
-    public float throwForce = 500f;
-    public float pickupRange = 3f;
+    public Transform ballHolder;
+    public float minThrowForce = 300f;
+    public float maxThrowForce = 1000f;
+    public float chargeSpeed = 500f;
+    public Slider powerSlider; // Sağ alttaki bar
+
+    private float currentThrowForce;
+    private bool isCharging = false;
 
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Collider col;
-    private bool isHeld = true;          // Ball starts in hand
+    private bool isHeld = true;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
-
-        // Start in hand: disable physics
         HoldBall();
+
+        if (powerSlider != null)
+        {
+            powerSlider.minValue = minThrowForce;
+            powerSlider.maxValue = maxThrowForce;
+            powerSlider.value = minThrowForce;
+            powerSlider.gameObject.SetActive(false); // Başta gizli
+        }
     }
 
     void Update()
     {
-        if (isHeld && Input.GetKeyDown(KeyCode.Space))
+        if (isHeld)
         {
-            ThrowBall();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                isCharging = true;
+                currentThrowForce = minThrowForce;
+                powerSlider.gameObject.SetActive(true);
+            }
+
+            if (isCharging)
+            {
+                currentThrowForce += chargeSpeed * Time.deltaTime;
+                currentThrowForce = Mathf.Clamp(currentThrowForce, minThrowForce, maxThrowForce);
+                powerSlider.value = currentThrowForce;
+            }
+
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                isCharging = false;
+                ThrowBall();
+                powerSlider.gameObject.SetActive(false);
+            }
         }
-        else if (!isHeld && Input.GetKeyDown(KeyCode.F))
+        else if (Input.GetKeyDown(KeyCode.F))
         {
             TryPickup();
         }
@@ -34,7 +65,6 @@ public class BallPickupAndThrow : MonoBehaviour
     void HoldBall()
     {
         isHeld = true;
-
         rb.isKinematic = true;
         col.enabled = false;
 
@@ -52,17 +82,15 @@ public class BallPickupAndThrow : MonoBehaviour
         rb.isKinematic = false;
         col.enabled = true;
 
-        transform.localScale = Vector3.one;
-        rb.velocity = Vector3.zero; // Reset existing velocity
-        rb.AddForce(ballHolder.forward * throwForce);
+        rb.velocity = Vector3.zero;
+        rb.AddForce(ballHolder.forward * currentThrowForce);
         rb.AddTorque(Random.insideUnitSphere * 10f);
     }
 
     void TryPickup()
     {
-        // Check if player is close enough
         float distance = Vector3.Distance(transform.position, ballHolder.position);
-        if (distance <= pickupRange)
+        if (distance <= 3f)
         {
             HoldBall();
         }
