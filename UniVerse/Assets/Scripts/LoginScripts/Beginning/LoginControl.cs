@@ -18,6 +18,7 @@ public class LoginControl : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sifreControlErrorText;
      [Header("Scene Names")]
     [SerializeField] private string characterCreationScene = "CharCreator";
+    [SerializeField] private string characterCreationSceneMale = "CharCreatorMale";
 
     private FirebaseFirestore firestore;
 
@@ -119,13 +120,25 @@ public class LoginControl : MonoBehaviour
             if (hashedPasswordInDb == hashedPasswordInput)
             {
                 Debug.Log("Şifre doğru, giriş başarılı.");
-                SceneManager.LoadScene(characterCreationScene);
+                //SceneManager.LoadScene(characterCreationScene);
+                // Firestore'dan cinsiyeti oku
+                string gender = userDoc.Exists && userDoc.ContainsField("cinsiyet")
+                    ? userDoc.GetValue<string>("cinsiyet")
+                    : "";
+
+                // Cinsiyete göre sahne yükle
+                if (gender.Equals("Kadın", System.StringComparison.OrdinalIgnoreCase))
+                    SceneManager.LoadScene(characterCreationScene);
+                else if (gender.Equals("Erkek", System.StringComparison.OrdinalIgnoreCase))
+                    SceneManager.LoadScene(characterCreationSceneMale);
+                else
+                    Debug.LogWarning("Cinsiyet alanı bulunamadı veya tanınmıyor: " + gender);
             }
             else
             {
                 sifreControlErrorText.text = "Sifre hatali.";
                 sifreControlErrorText.gameObject.SetActive(true);  // Hata mesajını görünür yap
-                
+
             }
         }
         catch (FirebaseException e)
