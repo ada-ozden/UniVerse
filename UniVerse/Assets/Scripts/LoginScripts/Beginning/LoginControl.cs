@@ -16,7 +16,8 @@ public class LoginControl : MonoBehaviour
     [SerializeField] private TextMeshProUGUI emailControlErrorText;
     [SerializeField] private TextMeshProUGUI sifreErrorText;
     [SerializeField] private TextMeshProUGUI sifreControlErrorText;
-    [SerializeField] private string nextSceneName = "GameScene";
+     [Header("Scene Names")]
+    [SerializeField] private string characterCreationScene = "CharCreator";
 
     private FirebaseFirestore firestore;
 
@@ -118,7 +119,7 @@ public class LoginControl : MonoBehaviour
             if (hashedPasswordInDb == hashedPasswordInput)
             {
                 Debug.Log("Şifre doğru, giriş başarılı.");
-                SceneManager.LoadScene(nextSceneName);
+                SceneManager.LoadScene(characterCreationScene);
             }
             else
             {
