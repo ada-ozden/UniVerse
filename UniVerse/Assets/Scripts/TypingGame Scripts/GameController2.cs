@@ -25,7 +25,7 @@ public class GameController2 : MonoBehaviour
         timerText.text = "Süre: " + timeLimit.ToString();
         // Önceki puanı al, yoksa başlangıç puanını ayarla
         baseScore = PlayerPrefs.GetInt("TotalScore", 100);
-        totalScoreText.text = "UniCoin: " + baseScore.ToString();
+        totalScoreText.text = "Puan: " + baseScore.ToString();
     }
 
     public void StartGame()

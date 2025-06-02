@@ -24,12 +24,12 @@ public class GameController : MonoBehaviour
         startButton.onClick.AddListener(StartGame);
         timerText.text = "Süre: " + timeLimit.ToString();
         timeUpText.gameObject.SetActive(false);
-         baseScore = 100;
+         baseScore = 0;
     PlayerPrefs.SetInt("TotalScore", baseScore); 
     totalScoreText.text = "Puan: " + baseScore.ToString();
         // Önceki puanı al, yoksa başlangıç puanını ayarla
-        //baseScore = PlayerPrefs.GetInt("TotalScore", 100);
-        //totalScoreText.text = "UniCoin: " + baseScore.ToString();
+        baseScore = PlayerPrefs.GetInt("TotalScore", 100);
+        totalScoreText.text = "Puan: " + baseScore.ToString();
     }
 
     public void StartGame()
