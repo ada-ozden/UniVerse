@@ -1,8 +1,8 @@
 {
   "project_info": {
     "project_number": "299881956509",
+    "firebase_url": "https://universeproject-27902-default-rtdb.firebaseio.com",
     "project_id": "universeproject-27902",
-    "firebase_url": "https://universeproject-27902.firebaseio.com",
     "storage_bucket": "universeproject-27902.firebasestorage.app"
   },
   "client": [
