@@ -17,8 +17,8 @@ public class LoginControl : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sifreErrorText;
     [SerializeField] private TextMeshProUGUI sifreControlErrorText;
      [Header("Scene Names")]
-    [SerializeField] private string characterCreationScene = "CharCreator";
-    [SerializeField] private string characterCreationSceneMale = "CharCreatorMale";
+    [SerializeField] private string CharCreator = "CharCreator";
+    [SerializeField] private string CharCreatorMale = "CharCreatorMale";
 
     private FirebaseFirestore firestore;
 
@@ -120,7 +120,7 @@ public class LoginControl : MonoBehaviour
             if (hashedPasswordInDb == hashedPasswordInput)
             {
                 Debug.Log("Şifre doğru, giriş başarılı.");
-                //SceneManager.LoadScene(characterCreationScene);
+                //SceneManager.LoadScene(CharCreator);
                 // Firestore'dan cinsiyeti oku
                 string gender = userDoc.Exists && userDoc.ContainsField("cinsiyet")
                     ? userDoc.GetValue<string>("cinsiyet")
@@ -128,9 +128,9 @@ public class LoginControl : MonoBehaviour
 
                 // Cinsiyete göre sahne yükle
                 if (gender.Equals("Kadın", System.StringComparison.OrdinalIgnoreCase))
-                    SceneManager.LoadScene(characterCreationScene);
+                    SceneManager.LoadScene(CharCreator);
                 else if (gender.Equals("Erkek", System.StringComparison.OrdinalIgnoreCase))
-                    SceneManager.LoadScene(characterCreationSceneMale);
+                    SceneManager.LoadScene(CharCreatorMale);
                 else
                     Debug.LogWarning("Cinsiyet alanı bulunamadı veya tanınmıyor: " + gender);
             }

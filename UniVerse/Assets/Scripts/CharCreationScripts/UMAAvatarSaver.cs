@@ -16,7 +16,7 @@ public class UMAAvatarSaver : MonoBehaviour
     [Header("UI References")]
     public Button saveButton;                  // Button to trigger save + scene change
     [Tooltip("Karakter kaydından sonra yönlendirilecek sahne adı")]
-    public string nextSceneName = "CharacterCreationScene";
+    public string nextSceneName = "InsideFacultyScene";
 
     // Firebase
     private FirebaseAuth auth;
