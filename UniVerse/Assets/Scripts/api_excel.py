@@ -11,6 +11,7 @@ image_path = r'C:\Users\oztur\Desktop\ders programı.png'
 
 # Kaydedilecek klasör
 save_folder = r"C:\Users\oztur\Desktop"
+save_folder_csv = r"Assets/StreamingAssets"
 
 # Görsel var mı kontrolü
 if not os.path.exists(image_path):
@@ -68,7 +69,7 @@ try:
     print(df)
 
     # 📁 Dosya yolları
-    csv_path = os.path.join(save_folder, "ders_program_cıktı.csv")
+    csv_path = os.path.join(save_folder_csv, "ders_program_cıktı.csv")
     excel_path = os.path.join(save_folder, "ders_p_cikti.xlsx")
 
     # 💾 Kaydetme
