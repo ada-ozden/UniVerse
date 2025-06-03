@@ -16,13 +16,14 @@ public class LoginControl : MonoBehaviour
     [SerializeField] private TextMeshProUGUI emailControlErrorText;
     [SerializeField] private TextMeshProUGUI sifreErrorText;
     [SerializeField] private TextMeshProUGUI sifreControlErrorText;
-     [Header("Scene Names")]
+
+    [Header("Scene Names")]
     [SerializeField] private string CharCreator = "CharCreator";
     [SerializeField] private string CharCreatorMale = "CharCreatorMale";
 
     private FirebaseFirestore firestore;
 
-    void Start()
+    private void Start()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
@@ -50,7 +51,7 @@ public class LoginControl : MonoBehaviour
         ResetErrorTexts();
     }
 
-    void InitializeFirebase()
+    private void InitializeFirebase()
     {
         firestore = FirebaseFirestore.DefaultInstance;
     }
@@ -64,7 +65,7 @@ public class LoginControl : MonoBehaviour
 
         if (emailInputField == null || sifreInputField == null)
         {
-            Debug.LogError("Email or Password Input Field is not assigned!");
+            Debug.LogError("Email veya Şifre Input Field’ı atanmadı!");
             return;
         }
 
@@ -73,21 +74,19 @@ public class LoginControl : MonoBehaviour
 
         if (string.IsNullOrEmpty(email))
         {
-            emailErrorText.text = "Email bos olamaz.";
+            emailErrorText.text = "Email boş olamaz.";
             emailErrorText.gameObject.SetActive(true);
-           
             return;
         }
 
         if (string.IsNullOrEmpty(sifre))
         {
-            sifreErrorText.text = "Sifre bos olamaz.";
+            sifreErrorText.text = "Şifre boş olamaz.";
             sifreErrorText.gameObject.SetActive(true);
-            
             return;
         }
 
-        // Firestore ile oturum açma işlemini başlatın
+        // Firestore üzerinden “kullaniciAdi” alanı ile kullanıcıyı sorgula
         LoginUserFirestore(email, sifre);
     }
 
@@ -95,56 +94,84 @@ public class LoginControl : MonoBehaviour
     {
         try
         {
-            // Firestore'dan email ile kullanıcıyı sorgula
+            // 1) users koleksiyonunda, “kullaniciAdi” = email olan belgeyi getir
             Query userQuery = firestore.Collection("users").WhereEqualTo("kullaniciAdi", email);
             QuerySnapshot userQuerySnapshot = await userQuery.GetSnapshotAsync();
 
-            // İlk belgeyi al
             DocumentSnapshot userDoc = userQuerySnapshot.Documents.FirstOrDefault();
-
             if (userDoc == null)
             {
-                emailControlErrorText.text = "E-posta adresi hatali.";
+                // Kullanıcı bulunamadı
+                emailControlErrorText.text = "E-posta adresi hatalı.";
                 emailControlErrorText.gameObject.SetActive(true);
                 Debug.LogError("Kullanıcı bulunamadı.");
                 return;
             }
 
-            // Veritabanından hashlenmiş şifreyi al
+            // 2) Veritabanındaki hashlenmiş şifreyi al
             string hashedPasswordInDb = userDoc.GetValue<string>("hashedPassword");
 
-            // Kullanıcının girdiği şifreyi hashle
+            // 3) Kullanıcının girdiği şifreyi hashle
             string hashedPasswordInput = PasswordHasher.HashPassword(password);
 
-            // Hashlenmiş şifreleri karşılaştır
-            if (hashedPasswordInDb == hashedPasswordInput)
+            // 4) Şifreleri karşılaştır
+            if (hashedPasswordInDb != hashedPasswordInput)
             {
-                Debug.Log("Şifre doğru, giriş başarılı.");
-                //SceneManager.LoadScene(CharCreator);
-                // Firestore'dan cinsiyeti oku
-                string gender = userDoc.Exists && userDoc.ContainsField("cinsiyet")
-                    ? userDoc.GetValue<string>("cinsiyet")
-                    : "";
+                sifreControlErrorText.text = "Şifre hatalı.";
+                sifreControlErrorText.gameObject.SetActive(true);
+                return;
+            }
 
-                // Cinsiyete göre sahne yükle
-                if (gender.Equals("Kadın", System.StringComparison.OrdinalIgnoreCase))
-                    SceneManager.LoadScene(CharCreator);
-                else if (gender.Equals("Erkek", System.StringComparison.OrdinalIgnoreCase))
-                    SceneManager.LoadScene(CharCreatorMale);
-                else
-                    Debug.LogWarning("Cinsiyet alanı bulunamadı veya tanınmıyor: " + gender);
+            // Şifre doğruysa:
+            Debug.Log("Şifre doğru, giriş başarılı.");
+
+            // 5) Doğru kullanıcı ID’sini PlayerPrefs’e kaydet
+            string uid = userDoc.Id; 
+            PlayerPrefs.SetString("currentUserId", uid);
+            PlayerPrefs.Save();
+            Debug.Log($"[LoginControl] currentUserId '{uid}' olarak PlayerPrefs’e kaydedildi.");
+
+            // 6) Kullanıcının Firestore’daki “avatarDefinition” var mı diye kontrol et
+            bool characterExists = false;
+            if (userDoc.ContainsField("avatarDefinition"))
+            {
+                string avatarDef = userDoc.GetValue<string>("avatarDefinition");
+                if (!string.IsNullOrEmpty(avatarDef))
+                    characterExists = true;
+            }
+
+            // 7) Sahne yönlendirme
+            if (characterExists)
+            {
+                // Karakter varsa direkt LobbyScene’e geç
+                SceneManager.LoadScene("LobbyScene");
             }
             else
             {
-                sifreControlErrorText.text = "Sifre hatali.";
-                sifreControlErrorText.gameObject.SetActive(true);  // Hata mesajını görünür yap
+                // Karakter yoksa cinsiyete göre CharCreator sahnesine yönlendir
+                string gender = userDoc.ContainsField("cinsiyet") 
+                    ? userDoc.GetValue<string>("cinsiyet") 
+                    : "";
 
+                if (gender.Equals("Kadın", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    SceneManager.LoadScene(CharCreator);
+                }
+                else if (gender.Equals("Erkek", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    SceneManager.LoadScene(CharCreatorMale);
+                }
+                else
+                {
+                    Debug.LogWarning($"[LoginControl] Cinsiyet alanı bulunamadı veya tanınmıyor: '{gender}', varsayılan olarak CharCreator’a geçiliyor.");
+                    SceneManager.LoadScene(CharCreator);
+                }
             }
         }
         catch (FirebaseException e)
         {
-            Debug.LogError("Firebase giriş hatası: " + e.Message);
-            emailErrorText.text = "Firebase giriş hatası: " + e.Message;
+            Debug.LogError("Firestore login hatası: " + e.Message);
+            emailErrorText.text = "Giriş hatası: " + e.Message;
             emailErrorText.gameObject.SetActive(true);
         }
     }
@@ -165,7 +192,7 @@ public class LoginControl : MonoBehaviour
     }
 }
 
-// Şifre hashleme için hasher sınıfı
+// Şifre hash’lemek için yardımcı sınıf
 public static class PasswordHasher
 {
     public static string HashPassword(string password)

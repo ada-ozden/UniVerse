@@ -355,6 +355,7 @@ public class SignUpForm : MonoBehaviour
     }
 }
 
+
 [FirestoreData]
 public class UserData
 {

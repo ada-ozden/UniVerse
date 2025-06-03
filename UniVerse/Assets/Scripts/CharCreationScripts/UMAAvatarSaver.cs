@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.UI;
 using UMA;
 using UMA.CharacterSystem;
@@ -16,7 +16,7 @@ public class UMAAvatarSaver : MonoBehaviour
     [Header("UI References")]
     public Button saveButton;                  // Button to trigger save + scene change
     [Tooltip("Karakter kaydından sonra yönlendirilecek sahne adı")]
-    public string nextSceneName = "InsideFacultyScene";
+    public string nextSceneName = "LobbyScene";
 
     // Firebase
     private FirebaseAuth auth;
