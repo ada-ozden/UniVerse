@@ -30,7 +30,7 @@ public class CSVReader : MonoBehaviour
 
             for (int i = 0; i < cells.Length && i < textCells.Length; i++)
             {
-                textCells[i].text = cells[i];
+                textCells[i].text = cells[i].Replace("\r\n", "\n").Replace("\r", "\n");
             }
         }
     }
