@@ -7,10 +7,10 @@ MODEL_ID = '33361d67-7adf-4b64-bbf9-ac0fe0755c6e'
 URL = f'https://app.nanonets.com/api/v2/OCR/Model/{MODEL_ID}/LabelFile/'
 
 # OCR yapılacak görselin yolu
-image_path = r'C:\Users\oztur\Desktop\ders programı.png'
+image_path = r'Assets/StreamingAssets/ders_programi.png'
 
 # Kaydedilecek klasör
-save_folder = r"C:\Users\oztur\Desktop"
+save_folder = r"Assets/StreamingAssets"
 save_folder_csv = r"Assets/StreamingAssets"
 
 # Görsel var mı kontrolü
