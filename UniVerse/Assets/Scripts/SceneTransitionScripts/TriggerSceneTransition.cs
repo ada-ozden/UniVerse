@@ -1,47 +1,38 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UMA.CharacterSystem; // AvatarDefinition için gerekli
+using UMA.CharacterSystem;
 
+[RequireComponent(typeof(Collider))]
 public class TriggerSceneTransition : MonoBehaviour
 {
-    [Header("UMA Avatar")]
-    [Tooltip("Bu alana LobbyScene'deki DynamicCharacterAvatar objesini atayın.")]
-    public DynamicCharacterAvatar avatar;
-
-    [Header("Transition Settings")]
-    [Tooltip("Geçecek sahnenin adı (Build Settings'teki tam adı).")]
-    public string targetSceneName = "InsideFaculty";
+    [Header("Transition Ayarları")]
+    [Tooltip("Build Settings'teki sahne adı")]
+    public string targetSceneName = "InsideFacultyScene";
 
     private void OnTriggerEnter(Collider other)
     {
-        // Sadece tag'i "Player" olan nesne tetikleyiciyi aktifleştirsin
-        if (!other.CompareTag("Player"))
-            return;
+        // Sadece Player tag'li nesnelerde çalışsın
+        if (!other.CompareTag("Player")) return;
 
-        // 1) Avatar'a compress edilmiş string'i al
+        // 1) Player objesinin altındaki DynamicCharacterAvatar'ı al
+        var avatar = other.GetComponentInChildren<DynamicCharacterAvatar>();
         if (avatar == null)
         {
-            Debug.LogError("[TriggerSceneTransition] 'avatar' referansı atanmamış!");
+            Debug.LogError("[TriggerSceneTransition] Player üzerinde DynamicCharacterAvatar bulunamadı!");
             return;
         }
 
-        // Mevcut avatarDefinition'ı sıkıştırılmış string olarak elde et
-        AvatarDefinition adf = avatar.GetAvatarDefinition(true);
-        string compressedString = adf.ToCompressedString("|");
-
-        // 2) PlayerPrefs'e kaydet
-        PlayerPrefs.SetString("SavedAvatar", compressedString);
+        // 2) AvatarDefinition'ı sıkıştır ve PlayerPrefs'e kaydet
+        var definition = avatar.GetAvatarDefinition(true);
+        string compressed = definition.ToCompressedString("|");
+        PlayerPrefs.SetString("SavedAvatar", compressed);
         PlayerPrefs.Save();
-        Debug.Log("[TriggerSceneTransition] AvatarDefinition PlayerPrefs'e kaydedildi.");
+        Debug.Log("[TriggerSceneTransition] AvatarDefinition kaydedildi.");
 
-        // 3) InsideFaculty sahnesine geçiş yap
+        // 3) Sahne geçişi
         if (!string.IsNullOrEmpty(targetSceneName))
-        {
             SceneManager.LoadScene(targetSceneName);
-        }
         else
-        {
-            Debug.LogError("[TriggerSceneTransition] 'targetSceneName' boş bırakılmış!");
-        }
+            Debug.LogError("[TriggerSceneTransition] targetSceneName boş!");
     }
 }

@@ -12,14 +12,16 @@ public class CSVReader : MonoBehaviour
     void Start()
     {
         string path = Path.Combine(Application.streamingAssetsPath, fileName);
+        bool exists = File.Exists(path);
 
-        if (!File.Exists(path))
+        if (!exists)
         {
             Debug.LogError("CSV dosyası bulunamadı: " + path);
             return;
         }
 
         string[] lines = File.ReadAllLines(path);
+        Debug.Log($"[CSVReader] Found {lines.Length} lines—will spawn {lines.Length} rows.");
 
         foreach (string line in lines)
         {

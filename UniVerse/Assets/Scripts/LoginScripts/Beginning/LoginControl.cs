@@ -143,8 +143,8 @@ public class LoginControl : MonoBehaviour
             // 7) Sahne yönlendirme
             if (characterExists)
             {
-                // Karakter varsa direkt LobbyScene’e geç
-                SceneManager.LoadScene("LobbyScene");
+                // Karakter varsa direkt Lobby’e geç
+                SceneManager.LoadScene("Loading");
             }
             else
             {
